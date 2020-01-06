@@ -1,23 +1,59 @@
-import tkinter, math, copy
+import tkinter, math, copy, sys
 
 
 def update():
     lbl.configure(text=str(p[0].get())+", "+str(p[1].get())+", "+str(p[2].get())+", "+str(p[3].get())+", "+str(p[4].get())+", "+str(p[5].get())+", "+str(p[6].get())+", "+str(p[7].get())+", "+str(p[8].get())+", "+str(p[9].get())+", "+str(p[10].get())+", "+str(p[11].get())+", "+str(p[12].get())+", "+str(p[13].get())+", "+str(p[14].get()))
 
 def start():
+    global found
+    found=False
     pieces=[0]*15
     for i in range(15):
         pieces[i]=p[i].get()
     move(pieces, [])
-    
+
+found=False
+
 def move(pieces, move_history):
+    global found
     moved=False
+    count=0
     for i in range(15):
+        if(found):
+            return
         if(pieces[i]==1):
             for j in range(len(valid_moves[i])):
-                if(pieces[valid_moves[i][j][0]]==1 and pieces[valid_moves[i][j][1]]==0):
-                    print(i, valid_moves[i][j])
-                
+                piece_jump=pieces[valid_moves[i][j][0]]
+                piece_dest=pieces[valid_moves[i][j][1]]
+                if(piece_jump==1 and piece_dest==0):
+                    moved=True
+                    pieces_adjust=copy.copy(pieces)
+
+                    # make the move
+                    pieces_adjust[i]=0
+                    pieces_adjust[valid_moves[i][j][0]]=0
+                    pieces_adjust[valid_moves[i][j][1]]=1
+
+                    # record the move
+                    my_move=[i]
+                    my_move.append(valid_moves[i][j])
+                    my_move_history=copy.copy(move_history)
+                    my_move_history.append(my_move)
+                    
+                    # find more available moves
+                    move(pieces_adjust,my_move_history)
+    if(not moved):
+        for i in range(15):
+            if(pieces[i]==1):
+                count+=1
+        # print(move_history)
+        # print("remaining pieces",count)
+        if(count==1):
+            print(move_history)
+            print("remaining pieces",count)
+            found=True
+        move_history=[]
+
 
 valid_moves=[
     # 0
