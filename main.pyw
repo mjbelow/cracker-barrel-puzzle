@@ -1,4 +1,4 @@
-import tkinter, math, copy, sys
+import tkinter, math, copy
 
 
 def update():
@@ -54,6 +54,9 @@ def move(pieces, move_history):
             found=True
         move_history=[]
 
+def clear():
+    print("[2J[0;0H")
+    
 
 valid_moves=[
     # 0
@@ -136,6 +139,7 @@ lbl.pack()
 # canvas.create_line(0, 0, 500, 500, 500, 250)
 # canvas.place(relx=0.5,rely=0.5,anchor=tkinter.CENTER)
 
-tkinter.Button(window, command=start, text="Solve").pack()
+tkinter.Button(window, command=start, text="Solve").place(relx=0.5,y=top/2-5,x=-85, width=80)
+tkinter.Button(window, command=clear, text="Clear").place(relx=0.5,y=top/2-5,x=5, width=80)
 
 window.mainloop()
