@@ -69,6 +69,13 @@ def move(pieces, move_history):
 def clear():
     print("[2J[0;0H")
     
+def clear_all():
+    for i in range(15):
+        p[i].set(0)
+
+def mark_all():
+    for i in range(15):
+        p[i].set(1)
 
 valid_moves=[
     # 0
@@ -157,7 +164,8 @@ lbl.pack()
 # canvas.create_line(0, 0, 500, 500, 500, 250)
 # canvas.place(relx=0.5,rely=0.5,anchor=tkinter.CENTER)
 
-
+tkinter.Button(window, command=clear_all, text="Clear All").place(relx=0.5,y=0,x=-255, width=80)
+tkinter.Button(window, command=mark_all, text="Mark All").place(relx=0.5,y=top/2,x=-255, width=80)
 tkinter.OptionMenu(window, found_limit, 1,2,3,4,5,10,20,30,40,50,100,150,200,250,300,600,900,1200,1500).place(relx=0.5,y=top/2-5,x=-170, width=80)
 tkinter.Label(window, text="Found Limit").place(relx=0.5,y=0,x=-170, width=80)
 tkinter.Button(window, command=start, text="Solve").place(relx=0.5,y=top/2-5,x=-85, width=80)
