@@ -49,7 +49,18 @@ def move(pieces, move_history):
                 count+=1
         # print(move_history)
         # print("remaining pieces",count)
-        if(count == peg_count.get()):
+        peg_count_option=False
+        if(peg_operator.get()=="<"):
+            peg_count_option=count < peg_count.get()
+        elif(peg_operator.get()=="<="):
+            peg_count_option=count <= peg_count.get()
+        elif(peg_operator.get()=="="):
+            peg_count_option=count == peg_count.get()
+        elif(peg_operator.get()==">="):
+            peg_count_option=count >= peg_count.get()
+        else:
+            peg_count_option=count > peg_count.get()
+        if(peg_count_option):
             print(move_history)
             print("remaining pieces",count)
             found+=1
@@ -101,6 +112,7 @@ peg_count=tkinter.IntVar(value=1)
 peg_count_choices={1,2,3,4,5,6,7,8,9,10,11,12,13,14,15}
 found_limit=tkinter.IntVar(value=1)
 found_limit_choices={1,2,3,4,5,10,15,20,25,50,75,100,200,400,600,800,1000}
+peg_operator=tkinter.StringVar(value="=")
 
 p=[0]*15;
 
@@ -153,5 +165,6 @@ tkinter.Button(window, command=clear, text="Clear").place(relx=0.5,y=top/2-5,x=5
 # tkinter.OptionMenu(window, peg_count, *peg_count_choices).place(relx=0.5,y=top/2-5,x=90, width=80)
 tkinter.OptionMenu(window, peg_count, 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15).place(relx=0.5,y=top/2-5,x=90, width=80)
 tkinter.Label(window, text="Peg Count").place(relx=0.5,y=0,x=90, width=80)
+tkinter.OptionMenu(window, peg_operator, "<","<=","=",">=",">").place(relx=0.5,y=0,x=175, width=80)
 
 window.mainloop()
