@@ -12,14 +12,15 @@ def start():
         pieces[i]=p[i].get()
     move(pieces, [])
 
-found=False
 
 def move(pieces, move_history):
     global found
+    global peg_count
+    global found_limit
     moved=False
     count=0
     for i in range(15):
-        if(found):
+        if(found >= found_limit.get()):
             return
         if(pieces[i]==1):
             for j in range(len(valid_moves[i])):
@@ -48,10 +49,10 @@ def move(pieces, move_history):
                 count+=1
         # print(move_history)
         # print("remaining pieces",count)
-        if(count==1):
+        if(count == peg_count.get()):
             print(move_history)
             print("remaining pieces",count)
-            found=True
+            found+=1
         move_history=[]
 
 def clear():
@@ -95,6 +96,11 @@ window = tkinter.Tk()
 window.geometry("550x550")
 window.title("Cracker Barrel Puzzle")
 
+found=0
+peg_count=tkinter.IntVar(value=1)
+peg_count_choices={1,2,3,4,5,6,7,8,9,10,11,12,13,14,15}
+found_limit=tkinter.IntVar(value=1)
+found_limit_choices={1,2,3,4,5,10,15,20,25,50,75,100,200,400,600,800,1000}
 
 p=[0]*15;
 
@@ -139,7 +145,13 @@ lbl.pack()
 # canvas.create_line(0, 0, 500, 500, 500, 250)
 # canvas.place(relx=0.5,rely=0.5,anchor=tkinter.CENTER)
 
+
+tkinter.OptionMenu(window, found_limit, 1,2,3,4,5,10,20,30,40,50,100,150,200,250,300,600,900,1200,1500).place(relx=0.5,y=top/2-5,x=-170, width=80)
+tkinter.Label(window, text="Found Limit").place(relx=0.5,y=0,x=-170, width=80)
 tkinter.Button(window, command=start, text="Solve").place(relx=0.5,y=top/2-5,x=-85, width=80)
 tkinter.Button(window, command=clear, text="Clear").place(relx=0.5,y=top/2-5,x=5, width=80)
+# tkinter.OptionMenu(window, peg_count, *peg_count_choices).place(relx=0.5,y=top/2-5,x=90, width=80)
+tkinter.OptionMenu(window, peg_count, 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15).place(relx=0.5,y=top/2-5,x=90, width=80)
+tkinter.Label(window, text="Peg Count").place(relx=0.5,y=0,x=90, width=80)
 
 window.mainloop()
