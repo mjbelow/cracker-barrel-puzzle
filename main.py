@@ -16,8 +16,6 @@ def start():
 
 def move(pieces, move_history):
     global found
-    global peg_count
-    global found_limit
     moved=False
     
     # if there are less pegs than you want for a solution, stop going down that path
@@ -36,7 +34,7 @@ def move(pieces, move_history):
         return
         
     for i in range(15):
-        if(found >= found_limit.get()):
+        if(found_limit.get() and found >= found_limit_value.get()):
             return
         if(pieces[i]==1):
             for j in range(len(valid_moves[i])):
@@ -132,8 +130,8 @@ window.title("Cracker Barrel Puzzle")
 found=0
 peg_count=tkinter.IntVar(value=1)
 peg_count_choices={1,2,3,4,5,6,7,8,9,10,11,12,13,14,15}
-found_limit=tkinter.IntVar(value=1)
-found_limit_choices={1,2,3,4,5,10,15,20,25,50,75,100,200,400,600,800,1000}
+found_limit=tkinter.BooleanVar(value=True)
+found_limit_value=tkinter.IntVar(value=1)
 peg_operator=tkinter.StringVar(value="=")
 
 p=[0]*15;
@@ -181,8 +179,8 @@ lbl.pack()
 
 tkinter.Button(window, command=clear_all, text="Clear All").place(relx=0.5,y=0,x=-255, width=80)
 tkinter.Button(window, command=mark_all, text="Mark All").place(relx=0.5,y=top/2,x=-255, width=80)
-tkinter.OptionMenu(window, found_limit, 1,2,3,4,5,10,20,30,40,50,100,150,200,250,300,600,900,1200,1500).place(relx=0.5,y=top/2-5,x=-170, width=80)
-tkinter.Label(window, text="Found Limit").place(relx=0.5,y=0,x=-170, width=80)
+tkinter.OptionMenu(window, found_limit_value, 1,2,3,4,5,10,20,30,40,50,100,200,300,400,500,1000,2000,3000,4000,5000).place(relx=0.5,y=top/2-5,x=-170, width=80)
+tkinter.Checkbutton(window, variable=found_limit, text="Found Limit").place(relx=0.5,y=0,x=-170, width=80)
 tkinter.Button(window, command=start, text="Solve").place(relx=0.5,y=top/2-5,x=-85, width=80)
 tkinter.Button(window, command=clear, text="Clear").place(relx=0.5,y=top/2-5,x=5, width=80)
 # tkinter.OptionMenu(window, peg_count, *peg_count_choices).place(relx=0.5,y=top/2-5,x=90, width=80)
