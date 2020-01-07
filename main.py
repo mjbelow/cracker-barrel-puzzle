@@ -1,5 +1,6 @@
-import tkinter, math, copy
+import tkinter, math, copy, os
 
+clear = lambda: os.system("cls")
 
 def update():
     lbl.configure(text=str(p[0].get())+", "+str(p[1].get())+", "+str(p[2].get())+", "+str(p[3].get())+", "+str(p[4].get())+", "+str(p[5].get())+", "+str(p[6].get())+", "+str(p[7].get())+", "+str(p[8].get())+", "+str(p[9].get())+", "+str(p[10].get())+", "+str(p[11].get())+", "+str(p[12].get())+", "+str(p[13].get())+", "+str(p[14].get()))
@@ -77,14 +78,12 @@ def move(pieces, move_history):
         else:
             peg_count_option=count > peg_count.get()
         if(peg_count_option):
-            print(move_history)
-            print("remaining pieces",count)
             found+=1
+            print(move_history)
+            print("remaining pieces: ",count)
+            print("solution count: ",found)
         move_history=[]
 
-def clear():
-    print("[2J[0;0H")
-    
 def clear_all():
     for i in range(15):
         p[i].set(0)
