@@ -18,7 +18,22 @@ def move(pieces, move_history):
     global peg_count
     global found_limit
     moved=False
+    
+    # if there are less pegs than you want for a solution, stop going down that path
     count=0
+    for i in range(15):
+        if(pieces[i]==1):
+            count+=1
+    peg_count_option=False
+    if(peg_operator.get()=="<" or peg_operator.get()=="<="):
+        peg_count_option=False
+    elif(peg_operator.get()=="=" or peg_operator.get()==">="):
+        peg_count_option=count < peg_count.get()
+    else:
+        peg_count_option=count <= peg_count.get()
+    if(peg_count_option):
+        return
+        
     for i in range(15):
         if(found >= found_limit.get()):
             return
@@ -44,6 +59,7 @@ def move(pieces, move_history):
                     # find more available moves
                     move(pieces_adjust,my_move_history)
     if(not moved):
+        count=0
         for i in range(15):
             if(pieces[i]==1):
                 count+=1
