@@ -1,4 +1,4 @@
-import tkinter, math, copy, os
+import tkinter, math, copy, os, threading
 
 clear = lambda: os.system("cls")
 
@@ -7,21 +7,32 @@ def update():
 
 
 finished=False
+started=False
+stopped=True
 
 def start():
-    global found, finished
-    found=False
-    finished=False
-    pieces=[0]*15
-    for i in range(15):
-        pieces[i]=piece[i].get()
-    move(True, pieces, [])
-
+    global started, stopped, found, finished
+    if not started:
+        started=True
+        stopped=False
+        found=False
+        finished=False
+        pieces=[0]*15
+        for i in range(15):
+            pieces[i]=piece[i].get()
+        thread = threading.Thread(target=move, args=(True, pieces, []))
+        thread.start()
 
 def move(first, pieces, move_history):
-    global found, finished
+    global started, found, finished
     moved=False
 
+    if not finished:
+        # hacky solution because if this thread has no activity apart from processing, the app will become unresponsive
+        # so this just prints, but stays in the same place (the ansi sequence causes the cursor to move up a line, and the print function moves down a line)
+        print("[1A")
+        # print(pieces)
+    
     # if there are less pegs than you want for a solution, stop going down that path
     count=0
     for i in range(15):
@@ -38,7 +49,8 @@ def move(first, pieces, move_history):
         return
 
     for i in range(15):
-        if(found_limit.get() and found >= found_limit_value.get()):
+        if(stopped or (found_limit.get() and found >= found_limit_value.get())):
+            started=False
             if not finished:
                 finished=True
                 print("---------------------")
@@ -92,6 +104,8 @@ def move(first, pieces, move_history):
         move_history=[]
     if(first):
         print("---------------------")
+        started=False
+        finished=True
 
 def clear_all():
     for i in range(15):
@@ -102,6 +116,10 @@ def mark_all():
     for i in range(15):
         piece[i].set(1)
     update()
+    
+def stop():
+    global stopped
+    stopped=True
 
 valid_moves=[
     # 0
@@ -218,5 +236,6 @@ tkinter.Button(window, command=clear, text="Clear").place(relx=0.5,y=top/2-5,x=5
 tkinter.OptionMenu(window, peg_count, 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15).place(relx=0.5,y=top/2-5,x=90, width=80)
 tkinter.Label(window, text="Peg Count").place(relx=0.5,y=0,x=90, width=80)
 tkinter.OptionMenu(window, peg_operator, "<","<=","=",">=",">").place(relx=0.5,y=0,x=175, width=80)
+tkinter.Button(window, command=stop, text="Stop").place(relx=0.5,y=top,x=175, width=80)
 
 window.mainloop()
