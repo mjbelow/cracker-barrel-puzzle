@@ -4,16 +4,9 @@ clear = lambda: os.system("cls")
 
 def update():
     lbl.configure(text=str(piece[0].get())+", "+str(piece[1].get())+", "+str(piece[2].get())+", "+str(piece[3].get())+", "+str(piece[4].get())+", "+str(piece[5].get())+", "+str(piece[6].get())+", "+str(piece[7].get())+", "+str(piece[8].get())+", "+str(piece[9].get())+", "+str(piece[10].get())+", "+str(piece[11].get())+", "+str(piece[12].get())+", "+str(piece[13].get())+", "+str(piece[14].get()))
-    for i in range(15):
-        if piece[i].get()==1:
-            puzzle[i].configure(relief="sunken")
-            # puzzle[i].configure(relief="groove")
-        else:
-            puzzle[i].configure(relief="raised")
-            # puzzle[i].configure(relief="ridge")
-            # puzzle[i].configure(relief="flat")
-        
-    
+
+
+
 def start():
     global found
     found=False
@@ -26,7 +19,7 @@ def start():
 def move(pieces, move_history):
     global found
     moved=False
-    
+
     # if there are less pegs than you want for a solution, stop going down that path
     count=0
     for i in range(15):
@@ -41,7 +34,7 @@ def move(pieces, move_history):
         peg_count_option=count <= peg_count.get()
     if(peg_count_option):
         return
-        
+
     for i in range(15):
         if(found_limit.get() and found >= found_limit_value.get()):
             return
@@ -63,7 +56,7 @@ def move(pieces, move_history):
                     my_move.append(valid_moves[i][j])
                     my_move_history=copy.copy(move_history)
                     my_move_history.append(my_move)
-                    
+
                     # find more available moves
                     move(pieces_adjust,my_move_history)
     if(not moved):
@@ -154,26 +147,26 @@ top=50
 vert_dist=horz_dist=100
 
 puzzle=[
-    tkinter.Checkbutton(window, relief="sunken", variable=piece[0], command=update, text=0),
-    
-    tkinter.Checkbutton(window, relief="sunken", variable=piece[1], command=update, text=1),
-    tkinter.Checkbutton(window, relief="sunken", variable=piece[2], command=update, text=2),
-    
-    tkinter.Checkbutton(window, relief="sunken", variable=piece[3], command=update, text=3),
-    tkinter.Checkbutton(window, relief="sunken", variable=piece[4], command=update, text=4),
-    tkinter.Checkbutton(window, relief="sunken", variable=piece[5], command=update, text=5),
-    
-    tkinter.Checkbutton(window, relief="sunken", variable=piece[6], command=update, text=6),
-    tkinter.Checkbutton(window, relief="sunken", variable=piece[7], command=update, text=7),
-    tkinter.Checkbutton(window, relief="sunken", variable=piece[8], command=update, text=8),
-    tkinter.Checkbutton(window, relief="sunken", variable=piece[9], command=update, text=9),
-    
-    tkinter.Checkbutton(window, relief="sunken", variable=piece[10], command=update, text=10),
-    tkinter.Checkbutton(window, relief="sunken", variable=piece[11], command=update, text=11),
-    tkinter.Checkbutton(window, relief="sunken", variable=piece[12], command=update, text=12),
-    tkinter.Checkbutton(window, relief="sunken", variable=piece[13], command=update, text=13),
-    tkinter.Checkbutton(window, relief="sunken", variable=piece[14], command=update, text=14)
+    # tkinter.Checkbutton(window, indicatoron=False, variable=piece[0], command=update, text=0, offrelief="flat", activebackground="#999", background="blue", selectcolor="#aaa",overrelief="ridge"),
+    tkinter.Checkbutton(window),
+    tkinter.Checkbutton(window),
+    tkinter.Checkbutton(window),
+    tkinter.Checkbutton(window),
+    tkinter.Checkbutton(window),
+    tkinter.Checkbutton(window),
+    tkinter.Checkbutton(window),
+    tkinter.Checkbutton(window),
+    tkinter.Checkbutton(window),
+    tkinter.Checkbutton(window),
+    tkinter.Checkbutton(window),
+    tkinter.Checkbutton(window),
+    tkinter.Checkbutton(window),
+    tkinter.Checkbutton(window),
+    tkinter.Checkbutton(window)
 ]
+
+for i in range(15):
+    puzzle[i].configure(indicatoron=False, variable=piece[i], command=update, text=i, selectcolor="#ccc")
 
 puzzle[0].place(relx=0.5, rely=0, x=-25, y=top, height=50, width=50)
 
