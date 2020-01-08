@@ -6,18 +6,20 @@ def update():
     lbl.configure(text=str(piece[0].get())+", "+str(piece[1].get())+", "+str(piece[2].get())+", "+str(piece[3].get())+", "+str(piece[4].get())+", "+str(piece[5].get())+", "+str(piece[6].get())+", "+str(piece[7].get())+", "+str(piece[8].get())+", "+str(piece[9].get())+", "+str(piece[10].get())+", "+str(piece[11].get())+", "+str(piece[12].get())+", "+str(piece[13].get())+", "+str(piece[14].get()))
 
 
+finished=False
 
 def start():
-    global found
+    global found, finished
     found=False
+    finished=False
     pieces=[0]*15
     for i in range(15):
         pieces[i]=piece[i].get()
-    move(pieces, [])
+    move(True, pieces, [])
 
 
-def move(pieces, move_history):
-    global found
+def move(first, pieces, move_history):
+    global found, finished
     moved=False
 
     # if there are less pegs than you want for a solution, stop going down that path
@@ -37,6 +39,9 @@ def move(pieces, move_history):
 
     for i in range(15):
         if(found_limit.get() and found >= found_limit_value.get()):
+            if not finished:
+                finished=True
+                print("---------------------")
             return
         if(pieces[i]==1):
             for j in range(len(valid_moves[i])):
@@ -58,7 +63,7 @@ def move(pieces, move_history):
                     my_move_history.append(my_move)
 
                     # find more available moves
-                    move(pieces_adjust,my_move_history)
+                    move(False,pieces_adjust,my_move_history)
     if(not moved):
         count=0
         for i in range(15):
@@ -79,10 +84,14 @@ def move(pieces, move_history):
             peg_count_option=count > peg_count.get()
         if(peg_count_option):
             found+=1
+            print()
             print(move_history)
             print("remaining pieces: ",count)
             print("solution count: ",found)
+            print()
         move_history=[]
+    if(first):
+        print("---------------------")
 
 def clear_all():
     for i in range(15):
