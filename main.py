@@ -3,14 +3,23 @@ import tkinter, math, copy, os
 clear = lambda: os.system("cls")
 
 def update():
-    lbl.configure(text=str(p[0].get())+", "+str(p[1].get())+", "+str(p[2].get())+", "+str(p[3].get())+", "+str(p[4].get())+", "+str(p[5].get())+", "+str(p[6].get())+", "+str(p[7].get())+", "+str(p[8].get())+", "+str(p[9].get())+", "+str(p[10].get())+", "+str(p[11].get())+", "+str(p[12].get())+", "+str(p[13].get())+", "+str(p[14].get()))
-
+    lbl.configure(text=str(piece[0].get())+", "+str(piece[1].get())+", "+str(piece[2].get())+", "+str(piece[3].get())+", "+str(piece[4].get())+", "+str(piece[5].get())+", "+str(piece[6].get())+", "+str(piece[7].get())+", "+str(piece[8].get())+", "+str(piece[9].get())+", "+str(piece[10].get())+", "+str(piece[11].get())+", "+str(piece[12].get())+", "+str(piece[13].get())+", "+str(piece[14].get()))
+    for i in range(15):
+        if piece[i].get()==1:
+            puzzle[i].configure(relief="sunken")
+            # puzzle[i].configure(relief="groove")
+        else:
+            puzzle[i].configure(relief="raised")
+            # puzzle[i].configure(relief="ridge")
+            # puzzle[i].configure(relief="flat")
+        
+    
 def start():
     global found
     found=False
     pieces=[0]*15
     for i in range(15):
-        pieces[i]=p[i].get()
+        pieces[i]=piece[i].get()
     move(pieces, [])
 
 
@@ -84,11 +93,13 @@ def move(pieces, move_history):
 
 def clear_all():
     for i in range(15):
-        p[i].set(0)
+        piece[i].set(0)
+    update()
 
 def mark_all():
     for i in range(15):
-        p[i].set(1)
+        piece[i].set(1)
+    update()
 
 valid_moves=[
     # 0
@@ -134,39 +145,57 @@ found_limit=tkinter.BooleanVar(value=True)
 found_limit_value=tkinter.IntVar(value=1)
 peg_operator=tkinter.StringVar(value="=")
 
-p=[0]*15;
+piece=[0]*15;
 
 for i in range(15):
-    p[i]=tkinter.IntVar(value=1)
+    piece[i]=tkinter.IntVar(value=1)
 
 top=50
 vert_dist=horz_dist=100
 
-tkinter.Checkbutton(window, relief="sunken", variable=p[0], command=update, text=0).place(relx=0.5, rely=0, x=-25, y=top, height=50, width=50)
+puzzle=[
+    tkinter.Checkbutton(window, relief="sunken", variable=piece[0], command=update, text=0),
+    
+    tkinter.Checkbutton(window, relief="sunken", variable=piece[1], command=update, text=1),
+    tkinter.Checkbutton(window, relief="sunken", variable=piece[2], command=update, text=2),
+    
+    tkinter.Checkbutton(window, relief="sunken", variable=piece[3], command=update, text=3),
+    tkinter.Checkbutton(window, relief="sunken", variable=piece[4], command=update, text=4),
+    tkinter.Checkbutton(window, relief="sunken", variable=piece[5], command=update, text=5),
+    
+    tkinter.Checkbutton(window, relief="sunken", variable=piece[6], command=update, text=6),
+    tkinter.Checkbutton(window, relief="sunken", variable=piece[7], command=update, text=7),
+    tkinter.Checkbutton(window, relief="sunken", variable=piece[8], command=update, text=8),
+    tkinter.Checkbutton(window, relief="sunken", variable=piece[9], command=update, text=9),
+    
+    tkinter.Checkbutton(window, relief="sunken", variable=piece[10], command=update, text=10),
+    tkinter.Checkbutton(window, relief="sunken", variable=piece[11], command=update, text=11),
+    tkinter.Checkbutton(window, relief="sunken", variable=piece[12], command=update, text=12),
+    tkinter.Checkbutton(window, relief="sunken", variable=piece[13], command=update, text=13),
+    tkinter.Checkbutton(window, relief="sunken", variable=piece[14], command=update, text=14)
+]
 
+puzzle[0].place(relx=0.5, rely=0, x=-25, y=top, height=50, width=50)
 
-tkinter.Checkbutton(window, relief="sunken", variable=p[1], command=update, text=1).place(relx=0.5, rely=0, x=-25-horz_dist/2, y=top+vert_dist, height=50, width=50)
-tkinter.Checkbutton(window, relief="sunken", variable=p[2], command=update, text=2).place(relx=0.5, rely=0, x=-25+horz_dist/2, y=top+vert_dist, height=50, width=50)
+puzzle[1].place(relx=0.5, rely=0, x=-25-horz_dist/2, y=top+vert_dist, height=50, width=50)
+puzzle[2].place(relx=0.5, rely=0, x=-25+horz_dist/2, y=top+vert_dist, height=50, width=50)
 
+puzzle[3].place(relx=0.5, rely=0, x=-25-horz_dist, y=top+vert_dist*2, height=50, width=50)
+puzzle[4].place(relx=0.5, rely=0, x=-25, y=top+vert_dist*2, height=50, width=50)
+puzzle[5].place(relx=0.5, rely=0, x=-25+horz_dist, y=top+vert_dist*2, height=50, width=50)
 
-tkinter.Checkbutton(window, relief="sunken", variable=p[3], command=update, text=3).place(relx=0.5, rely=0, x=-25-horz_dist, y=top+vert_dist*2, height=50, width=50)
-tkinter.Checkbutton(window, relief="sunken", variable=p[4], command=update, text=4).place(relx=0.5, rely=0, x=-25, y=top+vert_dist*2, height=50, width=50)
-tkinter.Checkbutton(window, relief="sunken", variable=p[5], command=update, text=5).place(relx=0.5, rely=0, x=-25+horz_dist, y=top+vert_dist*2, height=50, width=50)
+puzzle[6].place(relx=0.5, rely=0, x=-25-horz_dist/2-horz_dist, y=top+vert_dist*3, height=50, width=50)
+puzzle[7].place(relx=0.5, rely=0, x=-25-horz_dist/2, y=top+vert_dist*3, height=50, width=50)
+puzzle[8].place(relx=0.5, rely=0, x=-25+horz_dist/2, y=top+vert_dist*3, height=50, width=50)
+puzzle[9].place(relx=0.5, rely=0, x=-25+horz_dist/2+horz_dist, y=top+vert_dist*3, height=50, width=50)
 
+puzzle[10].place(relx=0.5, rely=0, x=-25-horz_dist*2, y=top+vert_dist*4, height=50, width=50)
+puzzle[11].place(relx=0.5, rely=0, x=-25-horz_dist, y=top+vert_dist*4, height=50, width=50)
+puzzle[12].place(relx=0.5, rely=0, x=-25, y=top+vert_dist*4, height=50, width=50)
+puzzle[13].place(relx=0.5, rely=0, x=-25+horz_dist, y=top+vert_dist*4, height=50, width=50)
+puzzle[14].place(relx=0.5, rely=0, x=-25+horz_dist*2, y=top+vert_dist*4, height=50, width=50)
 
-tkinter.Checkbutton(window, relief="sunken", variable=p[6], command=update, text=6).place(relx=0.5, rely=0, x=-25-horz_dist/2-horz_dist, y=top+vert_dist*3, height=50, width=50)
-tkinter.Checkbutton(window, relief="sunken", variable=p[7], command=update, text=7).place(relx=0.5, rely=0, x=-25-horz_dist/2, y=top+vert_dist*3, height=50, width=50)
-tkinter.Checkbutton(window, relief="sunken", variable=p[8], command=update, text=8).place(relx=0.5, rely=0, x=-25+horz_dist/2, y=top+vert_dist*3, height=50, width=50)
-tkinter.Checkbutton(window, relief="sunken", variable=p[9], command=update, text=9).place(relx=0.5, rely=0, x=-25+horz_dist/2+horz_dist, y=top+vert_dist*3, height=50, width=50)
-
-
-tkinter.Checkbutton(window, relief="sunken", variable=p[10], command=update, text=10).place(relx=0.5, rely=0, x=-25-horz_dist*2, y=top+vert_dist*4, height=50, width=50)
-tkinter.Checkbutton(window, relief="sunken", variable=p[11], command=update, text=11).place(relx=0.5, rely=0, x=-25-horz_dist, y=top+vert_dist*4, height=50, width=50)
-tkinter.Checkbutton(window, relief="sunken", variable=p[12], command=update, text=12).place(relx=0.5, rely=0, x=-25, y=top+vert_dist*4, height=50, width=50)
-tkinter.Checkbutton(window, relief="sunken", variable=p[13], command=update, text=13).place(relx=0.5, rely=0, x=-25+horz_dist, y=top+vert_dist*4, height=50, width=50)
-tkinter.Checkbutton(window, relief="sunken", variable=p[14], command=update, text=14).place(relx=0.5, rely=0, x=-25+horz_dist*2, y=top+vert_dist*4, height=50, width=50)
-
-lbl = tkinter.Label(window,text=str(p[0].get())+", "+str(p[1].get())+", "+str(p[2].get())+", "+str(p[3].get())+", "+str(p[4].get())+", "+str(p[5].get())+", "+str(p[6].get())+", "+str(p[7].get())+", "+str(p[8].get())+", "+str(p[9].get())+", "+str(p[10].get())+", "+str(p[11].get())+", "+str(p[12].get())+", "+str(p[13].get())+", "+str(p[14].get()))
+lbl = tkinter.Label(window,text=str(piece[0].get())+", "+str(piece[1].get())+", "+str(piece[2].get())+", "+str(piece[3].get())+", "+str(piece[4].get())+", "+str(piece[5].get())+", "+str(piece[6].get())+", "+str(piece[7].get())+", "+str(piece[8].get())+", "+str(piece[9].get())+", "+str(piece[10].get())+", "+str(piece[11].get())+", "+str(piece[12].get())+", "+str(piece[13].get())+", "+str(piece[14].get()))
 lbl.pack()
 
 # canvas = tkinter.Canvas()
