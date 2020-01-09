@@ -184,21 +184,29 @@ for i in range(5):
             c = i // 2
             pos = j-c
             puzzle[n].place(relx=0.5,rely=0,x=-25+horz_dist*pos,y=top+vert_dist*i,height=50, width=50)
+        else:
+            c = i // 2
+            pos2 = -1
+            if j > c:
+                c+=1
+                pos2 = 1
+            pos = j - c
+            puzzle[n].place(relx=0.5,rely=0,x=-25+horz_dist/2*pos2+horz_dist*pos,y=top+vert_dist*i,height=50,width=50)
     print()
 
 # puzzle[0].place(relx=0.5, rely=0, x=-25+horz_dist*0,                        y=top+vert_dist*0, height=50, width=50)
 
-puzzle[1].place(relx=0.5, rely=0, x=-25+horz_dist/2*-1+horz_dist*0,         y=top+vert_dist*1, height=50, width=50)
-puzzle[2].place(relx=0.5, rely=0, x=-25+horz_dist/2*1+horz_dist*0,          y=top+vert_dist*1, height=50, width=50)
+# puzzle[1].place(relx=0.5, rely=0, x=-25+horz_dist/2*-1+horz_dist*0,         y=top+vert_dist*1, height=50, width=50)
+# puzzle[2].place(relx=0.5, rely=0, x=-25+horz_dist/2*1+horz_dist*0,          y=top+vert_dist*1, height=50, width=50)
 
 # puzzle[3].place(relx=0.5, rely=0, x=-25+horz_dist*-1,                       y=top+vert_dist*2, height=50, width=50)
 # puzzle[4].place(relx=0.5, rely=0, x=-25+horz_dist*0,                        y=top+vert_dist*2, height=50, width=50)
 # puzzle[5].place(relx=0.5, rely=0, x=-25+horz_dist*1,                        y=top+vert_dist*2, height=50, width=50)
 
-puzzle[6].place(relx=0.5, rely=0, x=-25+horz_dist/2*-1+horz_dist*-1,        y=top+vert_dist*3, height=50, width=50)
-puzzle[7].place(relx=0.5, rely=0, x=-25+horz_dist/2*-1+horz_dist*0,         y=top+vert_dist*3, height=50, width=50)
-puzzle[8].place(relx=0.5, rely=0, x=-25+horz_dist/2*1+horz_dist*0,          y=top+vert_dist*3, height=50, width=50)
-puzzle[9].place(relx=0.5, rely=0, x=-25+horz_dist/2*1+horz_dist*1,          y=top+vert_dist*3, height=50, width=50)
+# puzzle[6].place(relx=0.5, rely=0, x=-25+horz_dist/2*-1+horz_dist*-1,        y=top+vert_dist*3, height=50, width=50)
+# puzzle[7].place(relx=0.5, rely=0, x=-25+horz_dist/2*-1+horz_dist*0,         y=top+vert_dist*3, height=50, width=50)
+# puzzle[8].place(relx=0.5, rely=0, x=-25+horz_dist/2*1+horz_dist*0,          y=top+vert_dist*3, height=50, width=50)
+# puzzle[9].place(relx=0.5, rely=0, x=-25+horz_dist/2*1+horz_dist*1,          y=top+vert_dist*3, height=50, width=50)
 
 # puzzle[10].place(relx=0.5, rely=0, x=-25+horz_dist*-2,                      y=top+vert_dist*4, height=50, width=50)
 # puzzle[11].place(relx=0.5, rely=0, x=-25+horz_dist*-1,                      y=top+vert_dist*4, height=50, width=50)
