@@ -2,20 +2,34 @@ import tkinter, math, copy, os
 
 clear = lambda: os.system("cls")
 
+def configure(event):
+    # center=window.winfo_width()//2
+    center=event.width//2
+    canvas.delete("all")
+    tri_1 = center, top-75
+    tri_2 = center+275.059384177, top-75+550
+    tri_3 = center-275.059384177, top-75+550
+    tri_1 = center, top+25
+    tri_2 = center+200.043188492, top+25+400
+    tri_3 = center-200.043188492, top+25+400
+    # 53.13010235415598 degrees? in which case +- 200
+    # 53.14, 400 (vertex angle, height)
+    # 2*height*tan(angle/2) = base width
+    # center +- (base width / 2)
+    # canvas.create_polygon(center, top+25, center+230.940107676, top+425, center-230.940107676, top+425, center, top+25, width=2, fill="SystemButtonFace", outline="#000")
+    canvas.create_polygon(tri_1, tri_2 , tri_3, width=2, fill="SystemButtonFace", outline="#000")    
+
 def update():
-    lbl.configure(text=str(piece[0].get())+", "+str(piece[1].get())+", "+str(piece[2].get())+", "+str(piece[3].get())+", "+str(piece[4].get())+", "+str(piece[5].get())+", "+str(piece[6].get())+", "+str(piece[7].get())+", "+str(piece[8].get())+", "+str(piece[9].get())+", "+str(piece[10].get())+", "+str(piece[11].get())+", "+str(piece[12].get())+", "+str(piece[13].get())+", "+str(piece[14].get()))
-
-
+    for i in range(15):
+        piece_values[i]=piece[i].get()
+    lbl.configure(text=piece_values)
 finished=False
 
 def start():
     global found, finished
     found=False
     finished=False
-    pieces=[0]*15
-    for i in range(15):
-        pieces[i]=piece[i].get()
-    move(True, pieces, [])
+    move(True, copy.copy(piece_values), [])
 
 
 def move(first, pieces, move_history):
@@ -137,22 +151,25 @@ valid_moves=[
 ]
 
 window = tkinter.Tk()
-window.geometry("550x550")
+window.geometry("550x600")
 window.title("Cracker Barrel Puzzle")
 
 found=0
 peg_count=tkinter.IntVar(value=1)
-peg_count_choices={1,2,3,4,5,6,7,8,9,10,11,12,13,14,15}
+peg_count_choices=set()
 found_limit=tkinter.BooleanVar(value=True)
 found_limit_value=tkinter.IntVar(value=1)
 peg_operator=tkinter.StringVar(value="=")
 
-piece=[0]*15;
+piece=[0]*15
+piece_values=[0]*15
 
 for i in range(15):
     piece[i]=tkinter.IntVar(value=1)
+    piece_values[i]=1
+    peg_count_choices.add(i+1)
 
-top=50
+top=100
 vert_dist=horz_dist=100
 
 puzzle=[
@@ -174,9 +191,19 @@ puzzle=[
     tkinter.Checkbutton(window)
 ]
 
+
+
+
+canvas = tkinter.Canvas()
+canvas.bind("<Configure>", configure)
+canvas.configure(background="SystemButtonFace")
+# canvas.create_line(0, 0, 500, 500, 500, 250)
+# canvas.create_line(0, 0, 500, 5000,width=4)
+canvas.place(x=0,y=0,  relwidth=1, relheight=1)
+
+# generate puzzle board
 for i in range(15):
     puzzle[i].configure(indicatoron=False, variable=piece[i], command=update, text=i, selectcolor="#ccc")
-
 for i in range(5):
     for j in range(i+1):
         n=j+(i*(i+1)//2)
@@ -190,27 +217,24 @@ for i in range(5):
             offset = horz_dist/2*pos2
         pos = j-c
         puzzle[n].place(relx=0.5,rely=0,x=-25+offset+horz_dist*pos,y=top+vert_dist*i,height=50, width=50)
+        puzzle[n].lift(canvas)
 
-
-lbl = tkinter.Label(window,text=str(piece[0].get())+", "+str(piece[1].get())+", "+str(piece[2].get())+", "+str(piece[3].get())+", "+str(piece[4].get())+", "+str(piece[5].get())+", "+str(piece[6].get())+", "+str(piece[7].get())+", "+str(piece[8].get())+", "+str(piece[9].get())+", "+str(piece[10].get())+", "+str(piece[11].get())+", "+str(piece[12].get())+", "+str(piece[13].get())+", "+str(piece[14].get()))
+# show status of pieces
+lbl = tkinter.Label(window,text=piece_values)
 lbl.pack()
 
 # canvas = tkinter.Canvas()
 # canvas.create_line(100, 600, 600, 600, 350, 600-math.sqrt(3)*250, 100, 600)
 # canvas.pack(fill=tkinter.BOTH, expand=1)
 
-# canvas = tkinter.Canvas()
-# canvas.create_line(0, 0, 500, 500, 500, 250)
-# canvas.place(relx=0.5,rely=0.5,anchor=tkinter.CENTER)
 
 tkinter.Button(window, command=clear_all, text="Clear All").place(relx=0.5,y=0,x=-255, width=80)
-tkinter.Button(window, command=mark_all, text="Mark All").place(relx=0.5,y=top/2,x=-255, width=80)
-tkinter.OptionMenu(window, found_limit_value, 1,2,3,4,5,10,20,30,40,50,100,200,300,400,500,1000,2000,3000,4000,5000).place(relx=0.5,y=top/2-5,x=-170, width=80)
+tkinter.Button(window, command=mark_all, text="Mark All").place(relx=0.5,y=30,x=-255, width=80)
+tkinter.OptionMenu(window, found_limit_value, 1,2,3,4,5,10,20,30,40,50,100,200,300,400,500,1000,2000,3000,4000,5000).place(relx=0.5,y=25,x=-170, width=80)
 tkinter.Checkbutton(window, variable=found_limit, text="Found Limit").place(relx=0.5,y=0,x=-170, width=80)
-tkinter.Button(window, command=start, text="Solve").place(relx=0.5,y=top/2-5,x=-85, width=80)
-tkinter.Button(window, command=clear, text="Clear").place(relx=0.5,y=top/2-5,x=5, width=80)
-# tkinter.OptionMenu(window, peg_count, *peg_count_choices).place(relx=0.5,y=top/2-5,x=90, width=80)
-tkinter.OptionMenu(window, peg_count, 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15).place(relx=0.5,y=top/2-5,x=90, width=80)
+tkinter.Button(window, command=start, text="Solve").place(relx=0.5,y=25,x=-85, width=80)
+tkinter.Button(window, command=clear, text="Clear").place(relx=0.5,y=25,x=5, width=80)
+tkinter.OptionMenu(window, peg_count, *peg_count_choices).place(relx=0.5,y=25,x=90, width=80)
 tkinter.Label(window, text="Peg Count").place(relx=0.5,y=0,x=90, width=80)
 tkinter.OptionMenu(window, peg_operator, "<","<=","=",">=",">").place(relx=0.5,y=0,x=175, width=80)
 
