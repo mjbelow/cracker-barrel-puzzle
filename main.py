@@ -6,23 +6,15 @@ def configure(event):
     # center=window.winfo_width()//2
     center=event.width//2
     canvas.delete("all")
-    tri_1 = center, top-75
-    tri_2 = center+275.059384177, top-75+550
-    tri_3 = center-275.059384177, top-75+550
     tri_1 = center, top+25
-    tri_2 = center+200.043188492, top+25+400
-    tri_3 = center-200.043188492, top+25+400
-    # 53.13010235415598 degrees? in which case +- 200
-    # 53.14, 400 (vertex angle, height)
-    # 2*height*tan(angle/2) = base width
-    # center +- (base width / 2)
-    # canvas.create_polygon(center, top+25, center+230.940107676, top+425, center-230.940107676, top+425, center, top+25, width=2, fill="SystemButtonFace", outline="#000")
+    tri_2 = center+tri_height/math.sqrt(3), top+25+tri_height
+    tri_3 = center-tri_height/math.sqrt(3), top+25+tri_height
     canvas.create_polygon(tri_1, tri_2 , tri_3, width=2, fill="SystemButtonFace", outline="#000")    
 
 def update():
-    for i in range(15):
+    for i in range(total):
         piece_values[i]=piece[i].get()
-    lbl.configure(text=piece_values)
+
 finished=False
 
 def start():
@@ -38,7 +30,7 @@ def move(first, pieces, move_history):
 
     # if there are less pegs than you want for a solution, stop going down that path
     count=0
-    for i in range(15):
+    for i in range(total):
         if(pieces[i]==1):
             count+=1
     peg_count_option=False
@@ -51,7 +43,7 @@ def move(first, pieces, move_history):
     if(peg_count_option):
         return
 
-    for i in range(15):
+    for i in range(total):
         if(found_limit.get() and found >= found_limit_value.get()):
             if not finished:
                 finished=True
@@ -80,7 +72,7 @@ def move(first, pieces, move_history):
                     move(False,pieces_adjust,my_move_history)
     if(not moved):
         count=0
-        for i in range(15):
+        for i in range(total):
             if(pieces[i]==1):
                 count+=1
         # print(move_history)
@@ -108,12 +100,12 @@ def move(first, pieces, move_history):
         print("---------------------")
 
 def clear_all():
-    for i in range(15):
+    for i in range(total):
         piece[i].set(0)
     update()
 
 def mark_all():
-    for i in range(15):
+    for i in range(total):
         piece[i].set(1)
     update()
 
@@ -131,13 +123,13 @@ valid_moves=[
     # 5
     [[4,3],[8,12],[2,0],[9,14]],
     # 6
-    [[3,1],[7,8]],
+    [[3,1],[7,8],[10,15],[11,17]],
     # 7
-    [[4,2],[8,9]],
+    [[4,2],[8,9],[11,16],[12,18]],
     # 8
-    [[7,6],[4,1]],
+    [[7,6],[4,1],[12,17],[13,19]],
     # 9
-    [[5,2],[8,7]],
+    [[5,2],[8,7],[13,18],[14,20]],
     # 10
     [[6,3],[11,12]],
     # 11
@@ -147,7 +139,19 @@ valid_moves=[
     # 13
     [[12,11],[8,4]],
     # 14
-    [[13,12],[9,5]]
+    [[13,12],[9,5]],
+    # 15
+    [[10,6],[16,17]],
+    # 16
+    [[11,7],[17,18]],
+    # 17
+    [[16,15],[11,6],[12,8],[18,19]],
+    # 18
+    [[17,16],[12,7],[13,9],[19,20]],
+    # 19
+    [[18,17],[13,8]],
+    # 20
+    [[19,18],[14,9]]
 ]
 
 window = tkinter.Tk()
@@ -161,50 +165,32 @@ found_limit=tkinter.BooleanVar(value=True)
 found_limit_value=tkinter.IntVar(value=1)
 peg_operator=tkinter.StringVar(value="=")
 
-piece=[0]*15
-piece_values=[0]*15
+rows = 6
+total = rows * (rows + 1) // 2
+piece=[0]*total
+piece_values=[0]*total
+puzzle=[0]*total
 
-for i in range(15):
+for i in range(total):
     piece[i]=tkinter.IntVar(value=1)
     piece_values[i]=1
     peg_count_choices.add(i+1)
+    puzzle[i]=tkinter.Checkbutton(window)
 
 top=100
-vert_dist=horz_dist=100
-
-puzzle=[
-    # tkinter.Checkbutton(window, indicatoron=False, variable=piece[0], command=update, text=0, offrelief="flat", activebackground="#999", background="blue", selectcolor="#aaa",overrelief="ridge"),
-    tkinter.Checkbutton(window),
-    tkinter.Checkbutton(window),
-    tkinter.Checkbutton(window),
-    tkinter.Checkbutton(window),
-    tkinter.Checkbutton(window),
-    tkinter.Checkbutton(window),
-    tkinter.Checkbutton(window),
-    tkinter.Checkbutton(window),
-    tkinter.Checkbutton(window),
-    tkinter.Checkbutton(window),
-    tkinter.Checkbutton(window),
-    tkinter.Checkbutton(window),
-    tkinter.Checkbutton(window),
-    tkinter.Checkbutton(window),
-    tkinter.Checkbutton(window)
-]
-
-
-
+horz_dist=100
+vert_dist=horz_dist/2*math.sqrt(3)
+tri_height=(rows-1)*vert_dist
 
 canvas = tkinter.Canvas()
 canvas.bind("<Configure>", configure)
 canvas.configure(background="SystemButtonFace")
-# canvas.create_line(0, 0, 500, 500, 500, 250)
-# canvas.create_line(0, 0, 500, 5000,width=4)
 canvas.place(x=0,y=0,  relwidth=1, relheight=1)
 
 # generate puzzle board
-for i in range(15):
+for i in range(total):
     puzzle[i].configure(indicatoron=False, variable=piece[i], command=update, text=i, selectcolor="#ccc")
-for i in range(5):
+for i in range(rows):
     for j in range(i+1):
         n=j+(i*(i+1)//2)
         c = i // 2
@@ -219,21 +205,12 @@ for i in range(5):
         puzzle[n].place(relx=0.5,rely=0,x=-25+offset+horz_dist*pos,y=top+vert_dist*i,height=50, width=50)
         puzzle[n].lift(canvas)
 
-# show status of pieces
-lbl = tkinter.Label(window,text=piece_values)
-lbl.pack()
-
-# canvas = tkinter.Canvas()
-# canvas.create_line(100, 600, 600, 600, 350, 600-math.sqrt(3)*250, 100, 600)
-# canvas.pack(fill=tkinter.BOTH, expand=1)
-
-
 tkinter.Button(window, command=clear_all, text="Clear All").place(relx=0.5,y=0,x=-255, width=80)
 tkinter.Button(window, command=mark_all, text="Mark All").place(relx=0.5,y=30,x=-255, width=80)
 tkinter.OptionMenu(window, found_limit_value, 1,2,3,4,5,10,20,30,40,50,100,200,300,400,500,1000,2000,3000,4000,5000).place(relx=0.5,y=25,x=-170, width=80)
-tkinter.Checkbutton(window, variable=found_limit, text="Found Limit").place(relx=0.5,y=0,x=-170, width=80)
-tkinter.Button(window, command=start, text="Solve").place(relx=0.5,y=25,x=-85, width=80)
-tkinter.Button(window, command=clear, text="Clear").place(relx=0.5,y=25,x=5, width=80)
+tkinter.Checkbutton(window, variable=found_limit, text="Found Limit").place(relx=0.5,y=0,x=-170, width=100)
+tkinter.Button(window, command=start, text="Solve").place(relx=0.5,y=0,x=-45, width=80)
+tkinter.Button(window, command=clear, text="Clear").place(relx=0.5,y=30,x=-45, width=80)
 tkinter.OptionMenu(window, peg_count, *peg_count_choices).place(relx=0.5,y=25,x=90, width=80)
 tkinter.Label(window, text="Peg Count").place(relx=0.5,y=0,x=90, width=80)
 tkinter.OptionMenu(window, peg_operator, "<","<=","=",">=",">").place(relx=0.5,y=0,x=175, width=80)
