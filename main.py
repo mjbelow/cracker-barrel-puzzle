@@ -9,7 +9,7 @@ def configure(event):
     tri_1 = center, top+25
     tri_2 = center+tri_height/math.sqrt(3), top+25+tri_height
     tri_3 = center-tri_height/math.sqrt(3), top+25+tri_height
-    canvas.create_polygon(tri_1, tri_2 , tri_3, width=2, fill="SystemButtonFace", outline="#000")    
+    canvas.create_polygon(tri_1, tri_2 , tri_3, width=2, fill="SystemButtonFace", outline="#000")
 
 def update():
     for i in range(total):
@@ -109,51 +109,6 @@ def mark_all():
         piece[i].set(1)
     update()
 
-valid_moves=[
-    # 0
-    [[1,3],[2,5]],
-    # 1
-    [[3,6],[4,8]],
-    # 2
-    [[4,7],[5,9]],
-    # 3
-    [[1,0],[4,5],[7,12],[6,10]],
-    # 4
-    [[7,11],[8,13]],
-    # 5
-    [[4,3],[8,12],[2,0],[9,14]],
-    # 6
-    [[3,1],[7,8],[10,15],[11,17]],
-    # 7
-    [[4,2],[8,9],[11,16],[12,18]],
-    # 8
-    [[7,6],[4,1],[12,17],[13,19]],
-    # 9
-    [[5,2],[8,7],[13,18],[14,20]],
-    # 10
-    [[6,3],[11,12]],
-    # 11
-    [[7,4],[12,13]],
-    # 12
-    [[11,10],[7,3],[8,5],[13,14]],
-    # 13
-    [[12,11],[8,4]],
-    # 14
-    [[13,12],[9,5]],
-    # 15
-    [[10,6],[16,17]],
-    # 16
-    [[11,7],[17,18]],
-    # 17
-    [[16,15],[11,6],[12,8],[18,19]],
-    # 18
-    [[17,16],[12,7],[13,9],[19,20]],
-    # 19
-    [[18,17],[13,8]],
-    # 20
-    [[19,18],[14,9]]
-]
-
 window = tkinter.Tk()
 window.geometry("550x600")
 window.title("Cracker Barrel Puzzle")
@@ -165,11 +120,13 @@ found_limit=tkinter.BooleanVar(value=True)
 found_limit_value=tkinter.IntVar(value=1)
 peg_operator=tkinter.StringVar(value="=")
 
-rows = 6
+rows = 5
 total = rows * (rows + 1) // 2
 piece=[0]*total
 piece_values=[0]*total
 puzzle=[0]*total
+puzzle_position=[]
+valid_moves=[0]*total
 
 for i in range(total):
     piece[i]=tkinter.IntVar(value=1)
@@ -190,9 +147,57 @@ canvas.place(x=0,y=0,  relwidth=1, relheight=1)
 # generate puzzle board
 for i in range(total):
     puzzle[i].configure(indicatoron=False, variable=piece[i], command=update, text=i, selectcolor="#ccc")
+
+# place each piece and figure out valid moves for the piece
 for i in range(rows):
+    # min and max pieces of this row
+    MIN = i * (i + 1) // 2
+    MAX = MIN + i
+    # up values based on min and max pieces of the row 2 rows ABOVE this one
+    UP_MIN = (i-2) * ((i-2) + 1) // 2
+    UP_MAX = UP_MIN + (i-2)
+    # down values based on min and max pieces of the row 2 rows BELOW this one
+    DOWN_MIN = (i+2) * ((i+2) + 1) // 2
+    DOWN_MAX = DOWN_MIN + (i+2)
     for j in range(i+1):
+        # piece number
         n=j+(i*(i+1)//2)
+
+        # piece movements
+        BL=[n+(i+1), n+(i+1)*2+1]
+        BR=[n+(i+1)+1, n+((i+1)+1)*2+1]
+        UR=[n-i, n-(i*2-1)]
+        UL=[n-(i+1), n-((i+1)*2-1)]
+        R=[n+1, n+2]
+        L=[n-1, n-2]
+
+        valid_moves[n]=[]
+
+        if i < rows-2:
+            # bottom left movement
+            if BL[1] >= DOWN_MIN and BL[1] <= DOWN_MAX:
+                valid_moves[n].append([BL[0], BL[1]])
+
+            # bottom right movement
+            if BR[1] >= DOWN_MIN and BR[1] <= DOWN_MAX:
+                valid_moves[n].append([BR[0], BR[1]])
+
+        if i >= 2:
+            # up right movement
+            if UR[1] >= UP_MIN and UR[1] <= UP_MAX:
+                valid_moves[n].append([UR[0], UR[1]])
+
+            # up left movement
+            if UL[1] >= UP_MIN and UL[1] <= UP_MAX:
+                valid_moves[n].append([UL[0], UL[1]])
+
+            # left movement
+            if L[1] >= MIN:
+                valid_moves[n].append([L[0], L[1]])
+            # right movement
+            if R[1] <= MAX:
+                valid_moves[n].append([R[0], R[1]])
+
         c = i // 2
         pos2 = -1
         offset = 0
@@ -202,6 +207,7 @@ for i in range(rows):
                 pos2 = 1
             offset = horz_dist/2*pos2
         pos = j-c
+        puzzle_position.append([-25+offset+horz_dist*pos, top+vert_dist*i])
         puzzle[n].place(relx=0.5,rely=0,x=-25+offset+horz_dist*pos,y=top+vert_dist*i,height=50, width=50)
         puzzle[n].lift(canvas)
 
