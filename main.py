@@ -2,17 +2,11 @@ import tkinter, math, copy, os
 
 clear = lambda: os.system("cls")
 
-def configure(event):
-    # center=window.winfo_width()//2
-    center=event.width//2
+def draw_board_lines():
+    center=window.winfo_width()//2
     canvas.delete("all")
-    tri_1 = center, top+piece_size_half
-    tri_2 = center+tri_height/math.sqrt(3), top+piece_size_half+tri_height
-    tri_3 = center-tri_height/math.sqrt(3), top+piece_size_half+tri_height
-    # canvas.create_polygon(tri_1, tri_2 , tri_3, width=2, fill="SystemButtonFace", outline="#000")
-    
     # draw lines connecting all pieces
-    for i in range(rows):    
+    for i in range(rows):
         # min and max pieces of this row
         MIN = i * (i + 1) // 2
         MAX = MIN + i
@@ -33,14 +27,8 @@ def configure(event):
         # top-right to bottom-left lines
         canvas.create_line(MAX_POS, LAST_MIN_POS, width=1, fill="#000")
 
-        
-    # draw valid moves
-    # for piece in range(len(valid_moves)):
-        # for move in valid_moves[piece]:
-            # line_start = center + puzzle_position[piece][0], puzzle_position[piece][1]
-            # line_end = center + puzzle_position[move[1]][0], puzzle_position[move[1]][1]
-            # canvas.create_line(line_start, line_end, width=1, fill="#000")
-    
+def configure(event):
+    draw_board_lines()
 
 def update():
     for i in range(total):
@@ -53,7 +41,6 @@ def start():
     found=False
     finished=False
     move(True, copy.copy(piece_values), [])
-
 
 def move(first, pieces, move_history):
     global found, finished
@@ -72,6 +59,8 @@ def move(first, pieces, move_history):
     else:
         peg_count_option=count <= peg_count.get()
     if(peg_count_option):
+        if(first):
+            print("---------------------")
         return
 
     for i in range(total):
@@ -167,11 +156,52 @@ found_limit=tkinter.BooleanVar(value=True)
 found_limit_value=tkinter.IntVar(value=1)
 peg_operator=tkinter.StringVar(value="=")
 
+class puzzle_piece(tkinter.Checkbutton):
+    def __init__(self, master, number):
+        super().__init__(master)
+        self.number = number
+        self.bind("<Enter>", self.on_enter)
+        self.bind("<Leave>", self.on_leave)
+        self.bind("<ButtonRelease-1>", self.on_release)
+
+    def on_enter(self, event):
+        draw_board_lines()
+        center=window.winfo_width()//2
+
+        piece_src=self.number
+        # draw lines to valid moves
+        for move in valid_moves[piece_src]:
+            piece_jump=move[0]
+            piece_dest=move[1]
+            if piece[piece_src].get() and piece[piece_jump].get() and (not piece[piece_dest].get()):
+                line_start=center+puzzle_position[piece_src][0], puzzle_position[piece_src][1]
+                line_end=center+puzzle_position[piece_dest][0], puzzle_position[piece_dest][1]
+                # draw line from this piece to valid move locations
+                canvas.create_line(line_start, line_end, width=3, fill="#f00")
+
+    def on_release(self, event):
+        draw_board_lines()
+        center=window.winfo_width()//2
+
+        piece_src=self.number
+        # draw lines to valid moves
+        for move in valid_moves[piece_src]:
+            piece_jump=move[0]
+            piece_dest=move[1]
+            if (not piece[piece_src].get()) and piece[piece_jump].get() and (not piece[piece_dest].get()):
+                line_start=center+puzzle_position[piece_src][0], puzzle_position[piece_src][1]
+                line_end=center+puzzle_position[piece_dest][0], puzzle_position[piece_dest][1]
+                # draw line from this piece to valid move locations
+                canvas.create_line(line_start, line_end, width=3, fill="#f00")
+
+    def on_leave(self, event):
+        draw_board_lines()
+
 for i in range(total):
     piece[i]=tkinter.IntVar(value=1)
     piece_values[i]=1
     peg_count_choices.add(i+1)
-    puzzle[i]=tkinter.Checkbutton(window)
+    puzzle[i]=puzzle_piece(window,i)
 
 canvas = tkinter.Canvas()
 canvas.bind("<Configure>", configure)
