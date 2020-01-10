@@ -6,10 +6,41 @@ def configure(event):
     # center=window.winfo_width()//2
     center=event.width//2
     canvas.delete("all")
-    tri_1 = center, top+25
-    tri_2 = center+tri_height/math.sqrt(3), top+25+tri_height
-    tri_3 = center-tri_height/math.sqrt(3), top+25+tri_height
-    canvas.create_polygon(tri_1, tri_2 , tri_3, width=2, fill="SystemButtonFace", outline="#000")
+    tri_1 = center, top+piece_size_half
+    tri_2 = center+tri_height/math.sqrt(3), top+piece_size_half+tri_height
+    tri_3 = center-tri_height/math.sqrt(3), top+piece_size_half+tri_height
+    # canvas.create_polygon(tri_1, tri_2 , tri_3, width=2, fill="SystemButtonFace", outline="#000")
+    
+    # draw lines connecting all pieces
+    for i in range(rows):    
+        # min and max pieces of this row
+        MIN = i * (i + 1) // 2
+        MAX = MIN + i
+        # min and max pieces of final row
+        LAST_MIN = (rows-1) * rows // 2
+        LAST_MAX = LAST_MIN + (rows-1)
+        # position of min and max piece for this row
+        MIN_POS = center + puzzle_position[MIN][0], puzzle_position[MIN][1]
+        MAX_POS = center + puzzle_position[MAX][0], puzzle_position[MAX][1]
+        # position of min piece for final row (increasing by 1 each time)
+        LAST_MIN_POS = center + puzzle_position[LAST_MIN+i][0], puzzle_position[LAST_MIN+i][1]
+        # position of max piece for final row (decreasing by 1 each time)
+        LAST_MAX_POS = center + puzzle_position[LAST_MAX-i][0], puzzle_position[LAST_MAX-i][1]
+        # horizontal lines
+        canvas.create_line(MIN_POS, MAX_POS, width=1, fill="#000")
+        # top-left to bottom-right lines
+        canvas.create_line(MIN_POS, LAST_MAX_POS, width=1, fill="#000")
+        # top-right to bottom-left lines
+        canvas.create_line(MAX_POS, LAST_MIN_POS, width=1, fill="#000")
+
+        
+    # draw valid moves
+    # for piece in range(len(valid_moves)):
+        # for move in valid_moves[piece]:
+            # line_start = center + puzzle_position[piece][0], puzzle_position[piece][1]
+            # line_end = center + puzzle_position[move[1]][0], puzzle_position[move[1]][1]
+            # canvas.create_line(line_start, line_end, width=1, fill="#000")
+    
 
 def update():
     for i in range(total):
@@ -109,8 +140,24 @@ def mark_all():
         piece[i].set(1)
     update()
 
+rows = 5
+total = rows * (rows + 1) // 2
+piece=[0]*total
+piece_values=[0]*total
+puzzle=[0]*total
+puzzle_position=[]
+valid_moves=[0]*total
+
+top=100
+horz_dist=100
+vert_dist=horz_dist/2*math.sqrt(3)
+piece_size=50
+piece_size_half=piece_size//2
+tri_width=(rows)*horz_dist
+tri_height=(rows-1)*vert_dist
+
 window = tkinter.Tk()
-window.geometry("550x600")
+window.geometry(str(tri_width+piece_size)+"x"+str(math.ceil(tri_height+piece_size*2)+top))
 window.title("Cracker Barrel Puzzle")
 
 found=0
@@ -120,24 +167,11 @@ found_limit=tkinter.BooleanVar(value=True)
 found_limit_value=tkinter.IntVar(value=1)
 peg_operator=tkinter.StringVar(value="=")
 
-rows = 5
-total = rows * (rows + 1) // 2
-piece=[0]*total
-piece_values=[0]*total
-puzzle=[0]*total
-puzzle_position=[]
-valid_moves=[0]*total
-
 for i in range(total):
     piece[i]=tkinter.IntVar(value=1)
     piece_values[i]=1
     peg_count_choices.add(i+1)
     puzzle[i]=tkinter.Checkbutton(window)
-
-top=100
-horz_dist=100
-vert_dist=horz_dist/2*math.sqrt(3)
-tri_height=(rows-1)*vert_dist
 
 canvas = tkinter.Canvas()
 canvas.bind("<Configure>", configure)
@@ -207,8 +241,8 @@ for i in range(rows):
                 pos2 = 1
             offset = horz_dist/2*pos2
         pos = j-c
-        puzzle_position.append([-25+offset+horz_dist*pos, top+vert_dist*i])
-        puzzle[n].place(relx=0.5,rely=0,x=-25+offset+horz_dist*pos,y=top+vert_dist*i,height=50, width=50)
+        puzzle_position.append([-piece_size_half+offset+horz_dist*pos + piece_size_half, top+vert_dist*i + piece_size_half])
+        puzzle[n].place(relx=0.5,rely=0,x=-piece_size_half+offset+horz_dist*pos,y=top+vert_dist*i,height=piece_size, width=piece_size)
         puzzle[n].lift(canvas)
 
 tkinter.Button(window, command=clear_all, text="Clear All").place(relx=0.5,y=0,x=-255, width=80)
