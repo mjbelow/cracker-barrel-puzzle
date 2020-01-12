@@ -1,4 +1,4 @@
-import tkinter, math, copy, os
+import tkinter, math, copy, os, functools
 
 clear = lambda: os.system("cls")
 
@@ -160,41 +160,29 @@ class puzzle_piece(tkinter.Checkbutton):
     def __init__(self, master, number):
         super().__init__(master)
         self.number = number
-        self.bind("<Enter>", self.on_enter)
-        self.bind("<Leave>", self.on_leave)
-        self.bind("<ButtonRelease-1>", self.on_release)
+        self.bind("<Enter>", functools.partial(self.show_moves, False))
+        self.bind("<ButtonRelease-1>", functools.partial(self.show_moves, True))
+        self.bind("<Leave>", self.clear_moves)
 
-    def on_enter(self, event):
+    def show_moves(self, release, event):
         draw_board_lines()
         center=window.winfo_width()//2
 
         piece_src=self.number
+        active=piece[piece_src].get()
+        if release:
+            active = not active
         # draw lines to valid moves
         for move in valid_moves[piece_src]:
             piece_jump=move[0]
             piece_dest=move[1]
-            if piece[piece_src].get() and piece[piece_jump].get() and (not piece[piece_dest].get()):
+            if active and piece[piece_jump].get() and (not piece[piece_dest].get()):
                 line_start=center+puzzle_position[piece_src][0], puzzle_position[piece_src][1]
                 line_end=center+puzzle_position[piece_dest][0], puzzle_position[piece_dest][1]
                 # draw line from this piece to valid move locations
                 canvas.create_line(line_start, line_end, width=3, fill="#f00")
 
-    def on_release(self, event):
-        draw_board_lines()
-        center=window.winfo_width()//2
-
-        piece_src=self.number
-        # draw lines to valid moves
-        for move in valid_moves[piece_src]:
-            piece_jump=move[0]
-            piece_dest=move[1]
-            if (not piece[piece_src].get()) and piece[piece_jump].get() and (not piece[piece_dest].get()):
-                line_start=center+puzzle_position[piece_src][0], puzzle_position[piece_src][1]
-                line_end=center+puzzle_position[piece_dest][0], puzzle_position[piece_dest][1]
-                # draw line from this piece to valid move locations
-                canvas.create_line(line_start, line_end, width=3, fill="#f00")
-
-    def on_leave(self, event):
+    def clear_moves(self, event):
         draw_board_lines()
 
 for i in range(total):
