@@ -1,4 +1,4 @@
-import tkinter, math, copy, os, functools
+import tkinter, math, copy, os, functools, tkinter.ttk
 
 window = tkinter.Tk()
 window.title("Cracker Barrel Puzzle")
@@ -134,6 +134,7 @@ def mark_all():
 
 def update_rows(name, index, operation):
     init(rows_value.get(), False)
+    draw_board_lines()
 
 class puzzle_piece(tkinter.Checkbutton):
     def __init__(self, master, number):
@@ -296,16 +297,14 @@ def init(rows_count, first):
         solve.place(relx=0.5,y=0,x=-45, width=80)
         clear_console=tkinter.Button(window, command=clear, text="Clear")
         clear_console.place(relx=0.5,y=30,x=-45, width=80)
-        peg_count_options=tkinter.OptionMenu(window, peg_count, *peg_count_choices)
+        peg_count_options=tkinter.ttk.OptionMenu(window, peg_count, *peg_count_choices)
         peg_count_options.place(relx=0.5,y=25,x=90, width=80)
         peg_count_label=tkinter.Label(window, text="Peg Count")
         peg_count_label.place(relx=0.5,y=0,x=90, width=80)
         operator=tkinter.OptionMenu(window, peg_operator, "<","<=","=",">=",">")
         operator.place(relx=0.5,y=0,x=175, width=80)
     else:
-        peg_count_options.place_forget()
-        peg_count_options=tkinter.OptionMenu(window, peg_count, *peg_count_choices)
-        peg_count_options.place(relx=0.5,y=25,x=90, width=80)
+        peg_count_options.set_menu(*peg_count_choices)
 
 init(5, True)
 window.mainloop()
