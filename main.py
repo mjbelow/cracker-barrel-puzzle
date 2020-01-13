@@ -1,5 +1,8 @@
 import tkinter, math, copy, os, functools
 
+window = tkinter.Tk()
+window.title("Cracker Barrel Puzzle")
+
 clear = lambda: os.system("cls")
 
 def draw_board_lines():
@@ -129,32 +132,8 @@ def mark_all():
         piece[i].set(1)
     update()
 
-rows = 5
-total = rows * (rows + 1) // 2
-piece=[0]*total
-piece_values=[0]*total
-puzzle=[0]*total
-puzzle_position=[]
-valid_moves=[0]*total
-
-top=100
-horz_dist=100
-vert_dist=horz_dist/2*math.sqrt(3)
-piece_size=50
-piece_size_half=piece_size//2
-tri_width=(rows)*horz_dist
-tri_height=(rows-1)*vert_dist
-
-window = tkinter.Tk()
-window.geometry(str(tri_width+piece_size)+"x"+str(math.ceil(tri_height+piece_size*2)+top))
-window.title("Cracker Barrel Puzzle")
-
-found=0
-peg_count=tkinter.IntVar(value=1)
-peg_count_choices=set()
-found_limit=tkinter.BooleanVar(value=True)
-found_limit_value=tkinter.IntVar(value=1)
-peg_operator=tkinter.StringVar(value="=")
+def update_rows(name, index, operation):
+    init(rows_value.get(), False)
 
 class puzzle_piece(tkinter.Checkbutton):
     def __init__(self, master, number):
@@ -185,92 +164,148 @@ class puzzle_piece(tkinter.Checkbutton):
     def clear_moves(self, event):
         draw_board_lines()
 
-for i in range(total):
-    piece[i]=tkinter.IntVar(value=1)
-    piece_values[i]=1
-    peg_count_choices.add(i+1)
-    puzzle[i]=puzzle_piece(window,i)
+rows_value = tkinter.IntVar(value=5)
+rows_value.trace("w",update_rows)
 
 canvas = tkinter.Canvas()
 canvas.bind("<Configure>", configure)
 canvas.configure(background="SystemButtonFace")
 canvas.place(x=0,y=0,  relwidth=1, relheight=1)
 
-# generate puzzle board
-for i in range(total):
-    puzzle[i].configure(indicatoron=False, variable=piece[i], command=update, text=i, selectcolor="#ccc")
+def init(rows_count, first):
+    global rows, total, piece, piece_values, puzzle, puzzle_position, valid_moves, top, horz_dist, vert_dist, piece_size, piece_size_half, tri_width, tri_height, found, peg_count, peg_count_choices, found_limit, found_limit_value, peg_operator, peg_count_options
 
-# place each piece and figure out valid moves for the piece
-for i in range(rows):
-    # min and max pieces of this row
-    MIN = i * (i + 1) // 2
-    MAX = MIN + i
-    # up values based on min and max pieces of the row 2 rows ABOVE this one
-    UP_MIN = (i-2) * ((i-2) + 1) // 2
-    UP_MAX = UP_MIN + (i-2)
-    # down values based on min and max pieces of the row 2 rows BELOW this one
-    DOWN_MIN = (i+2) * ((i+2) + 1) // 2
-    DOWN_MAX = DOWN_MIN + (i+2)
-    for j in range(i+1):
-        # piece number
-        n=j+(i*(i+1)//2)
+    if not first:
+        for i in range(total):
+            puzzle[i].place_forget()
 
-        # piece movements
-        BL=[n+(i+1), n+(i+1)*2+1]
-        BR=[n+(i+1)+1, n+((i+1)+1)*2+1]
-        UR=[n-i, n-(i*2-1)]
-        UL=[n-(i+1), n-((i+1)*2-1)]
-        R=[n+1, n+2]
-        L=[n-1, n-2]
+    rows = rows_count
+    total = rows * (rows + 1) // 2
+    piece=[0]*total
+    piece_values=[0]*total
+    puzzle=[0]*total
+    puzzle_position=[]
+    valid_moves=[0]*total
 
-        valid_moves[n]=[]
+    top=100
+    horz_dist=100
+    vert_dist=horz_dist/2*math.sqrt(3)
+    piece_size=50
+    piece_size_half=piece_size//2
+    tri_width=(rows)*horz_dist
+    tri_height=(rows-1)*vert_dist
 
-        if i < rows-2:
-            # bottom left movement
-            if BL[1] >= DOWN_MIN and BL[1] <= DOWN_MAX:
-                valid_moves[n].append([BL[0], BL[1]])
+    if tri_width+piece_size < 550:
+        window.geometry("550x"+str(math.ceil(tri_height+piece_size*2)+top))
+    else:
+        window.geometry(str(tri_width+piece_size)+"x"+str(math.ceil(tri_height+piece_size*2)+top))
 
-            # bottom right movement
-            if BR[1] >= DOWN_MIN and BR[1] <= DOWN_MAX:
-                valid_moves[n].append([BR[0], BR[1]])
+    found=0
+    peg_count_choices=set()
+    if first:
+        peg_count=tkinter.IntVar(value=1)
+        found_limit=tkinter.BooleanVar(value=True)
+        found_limit_value=tkinter.IntVar(value=1)
+        peg_operator=tkinter.StringVar(value="=")
 
-        if i >= 2:
-            # up right movement
-            if UR[1] >= UP_MIN and UR[1] <= UP_MAX:
-                valid_moves[n].append([UR[0], UR[1]])
+    for i in range(total):
+        piece[i]=tkinter.IntVar(value=1)
+        piece_values[i]=1
+        peg_count_choices.add(i+1)
+        puzzle[i]=puzzle_piece(window,i)
 
-            # up left movement
-            if UL[1] >= UP_MIN and UL[1] <= UP_MAX:
-                valid_moves[n].append([UL[0], UL[1]])
+    # generate puzzle board
+    for i in range(total):
+        puzzle[i].configure(indicatoron=False, variable=piece[i], command=update, text=i, selectcolor="#ccc")
 
-            # left movement
-            if L[1] >= MIN:
-                valid_moves[n].append([L[0], L[1]])
-            # right movement
-            if R[1] <= MAX:
-                valid_moves[n].append([R[0], R[1]])
+    # place each piece and figure out valid moves for the piece
+    for i in range(rows):
+        # min and max pieces of this row
+        MIN = i * (i + 1) // 2
+        MAX = MIN + i
+        # up values based on min and max pieces of the row 2 rows ABOVE this one
+        UP_MIN = (i-2) * ((i-2) + 1) // 2
+        UP_MAX = UP_MIN + (i-2)
+        # down values based on min and max pieces of the row 2 rows BELOW this one
+        DOWN_MIN = (i+2) * ((i+2) + 1) // 2
+        DOWN_MAX = DOWN_MIN + (i+2)
+        for j in range(i+1):
+            # piece number
+            n=j+(i*(i+1)//2)
 
-        c = i // 2
-        pos2 = -1
-        offset = 0
-        if i % 2 == 1:
-            if j > c:
-                c+=1
-                pos2 = 1
-            offset = horz_dist/2*pos2
-        pos = j-c
-        puzzle_position.append([-piece_size_half+offset+horz_dist*pos + piece_size_half, top+vert_dist*i + piece_size_half])
-        puzzle[n].place(relx=0.5,rely=0,x=-piece_size_half+offset+horz_dist*pos,y=top+vert_dist*i,height=piece_size, width=piece_size)
-        puzzle[n].lift(canvas)
+            # piece movements
+            BL=[n+(i+1), n+(i+1)*2+1]
+            BR=[n+(i+1)+1, n+((i+1)+1)*2+1]
+            UR=[n-i, n-(i*2-1)]
+            UL=[n-(i+1), n-((i+1)*2-1)]
+            R=[n+1, n+2]
+            L=[n-1, n-2]
 
-tkinter.Button(window, command=clear_all, text="Clear All").place(relx=0.5,y=0,x=-255, width=80)
-tkinter.Button(window, command=mark_all, text="Mark All").place(relx=0.5,y=30,x=-255, width=80)
-tkinter.OptionMenu(window, found_limit_value, 1,2,3,4,5,10,20,30,40,50,100,200,300,400,500,1000,2000,3000,4000,5000).place(relx=0.5,y=25,x=-170, width=80)
-tkinter.Checkbutton(window, variable=found_limit, text="Found Limit").place(relx=0.5,y=0,x=-170, width=100)
-tkinter.Button(window, command=start, text="Solve").place(relx=0.5,y=0,x=-45, width=80)
-tkinter.Button(window, command=clear, text="Clear").place(relx=0.5,y=30,x=-45, width=80)
-tkinter.OptionMenu(window, peg_count, *peg_count_choices).place(relx=0.5,y=25,x=90, width=80)
-tkinter.Label(window, text="Peg Count").place(relx=0.5,y=0,x=90, width=80)
-tkinter.OptionMenu(window, peg_operator, "<","<=","=",">=",">").place(relx=0.5,y=0,x=175, width=80)
+            valid_moves[n]=[]
 
+            if i < rows-2:
+                # bottom left movement
+                if BL[1] >= DOWN_MIN and BL[1] <= DOWN_MAX:
+                    valid_moves[n].append([BL[0], BL[1]])
+
+                # bottom right movement
+                if BR[1] >= DOWN_MIN and BR[1] <= DOWN_MAX:
+                    valid_moves[n].append([BR[0], BR[1]])
+
+            if i >= 2:
+                # up right movement
+                if UR[1] >= UP_MIN and UR[1] <= UP_MAX:
+                    valid_moves[n].append([UR[0], UR[1]])
+
+                # up left movement
+                if UL[1] >= UP_MIN and UL[1] <= UP_MAX:
+                    valid_moves[n].append([UL[0], UL[1]])
+
+                # left movement
+                if L[1] >= MIN:
+                    valid_moves[n].append([L[0], L[1]])
+                # right movement
+                if R[1] <= MAX:
+                    valid_moves[n].append([R[0], R[1]])
+
+            c = i // 2
+            pos2 = -1
+            offset = 0
+            if i % 2 == 1:
+                if j > c:
+                    c+=1
+                    pos2 = 1
+                offset = horz_dist/2*pos2
+            pos = j-c
+            puzzle_position.append([-piece_size_half+offset+horz_dist*pos + piece_size_half, top+vert_dist*i + piece_size_half])
+            puzzle[n].place(relx=0.5,rely=0,x=-piece_size_half+offset+horz_dist*pos,y=top+vert_dist*i,height=piece_size, width=piece_size)
+            puzzle[n].lift(canvas)
+
+    if first:
+        clear_all_btn = tkinter.Button(window, command=clear_all, text="Clear All")
+        clear_all_btn.place(relx=0.5,y=0,x=-255, width=80)
+        mark_all_btn = tkinter.Button(window, command=mark_all, text="Mark All")
+        mark_all_btn.place(relx=0.5,y=30,x=-255, width=80)
+        row_options=tkinter.OptionMenu(window, rows_value, 1,2,3,4,5,6,7,8,9,10,11,12)
+        row_options.place(relx=0.5,y=60,x=-255, width=80)
+        limit_options=tkinter.OptionMenu(window, found_limit_value, 1,2,3,4,5,10,20,30,40,50,100,200,300,400,500,1000,2000,3000,4000,5000)
+        limit_options.place(relx=0.5,y=25,x=-170, width=80)
+        limit_checkbox=tkinter.Checkbutton(window, variable=found_limit, text="Found Limit")
+        limit_checkbox.place(relx=0.5,y=0,x=-170, width=100)
+        solve=tkinter.Button(window, command=start, text="Solve")
+        solve.place(relx=0.5,y=0,x=-45, width=80)
+        clear_console=tkinter.Button(window, command=clear, text="Clear")
+        clear_console.place(relx=0.5,y=30,x=-45, width=80)
+        peg_count_options=tkinter.OptionMenu(window, peg_count, *peg_count_choices)
+        peg_count_options.place(relx=0.5,y=25,x=90, width=80)
+        peg_count_label=tkinter.Label(window, text="Peg Count")
+        peg_count_label.place(relx=0.5,y=0,x=90, width=80)
+        operator=tkinter.OptionMenu(window, peg_operator, "<","<=","=",">=",">")
+        operator.place(relx=0.5,y=0,x=175, width=80)
+    else:
+        peg_count_options.place_forget()
+        peg_count_options=tkinter.OptionMenu(window, peg_count, *peg_count_choices)
+        peg_count_options.place(relx=0.5,y=25,x=90, width=80)
+
+init(5, True)
 window.mainloop()
