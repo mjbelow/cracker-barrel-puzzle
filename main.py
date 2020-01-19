@@ -209,6 +209,7 @@ def init(rows_count, first):
         found_limit_value=tkinter.IntVar(value=1)
         peg_operator=tkinter.StringVar(value="=")
 
+    peg_count_choices.add(0)
     for i in range(total):
         piece[i]=tkinter.IntVar(value=1)
         piece_values[i]=1
