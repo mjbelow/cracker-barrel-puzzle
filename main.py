@@ -1,4 +1,5 @@
 import tkinter, math, copy, os, functools, tkinter.ttk, _thread
+from multiprocessing import Process
 
 window = tkinter.Tk()
 window.title("Cracker Barrel Puzzle")
@@ -43,7 +44,7 @@ def start():
     global found, finished
     found=False
     finished=False
-    _thread.start_new_thread(move, (True, copy.copy(piece_values), []))
+    Process(target=move, args=(True, copy.copy(piece_values), [])).start()
 
 def move(first, pieces, move_history):
     global found, finished
@@ -308,4 +309,5 @@ def init(rows_count, first):
         peg_count_options.set_menu(*peg_count_choices)
 
 init(5, True)
+# if __name__ == '__main__':
 window.mainloop()
