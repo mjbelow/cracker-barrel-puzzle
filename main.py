@@ -1,4 +1,4 @@
-import tkinter, math, copy, os, functools, tkinter.ttk
+import tkinter, math, copy, os, functools, tkinter.ttk, _thread
 
 window = tkinter.Tk()
 window.title("Cracker Barrel Puzzle")
@@ -43,7 +43,7 @@ def start():
     global found, finished
     found=False
     finished=False
-    move(True, copy.copy(piece_values), [])
+    _thread.start_new_thread(move, (True, copy.copy(piece_values), []))
 
 def move(first, pieces, move_history):
     global found, finished
