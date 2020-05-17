@@ -40,12 +40,19 @@ def update():
         piece_values[i]=piece[i].get()
 
 finished=False
+process=False
+
+def start_process():
+    global process
+    if(not process or not process.is_alive()):
+        process=Process(target=start, args=())
+        process.start()
 
 def start():
     global found, finished
     found=False
     finished=False
-    Process(target=move, args=(True, copy.copy(piece_values), [])).start()
+    move(True, copy.copy(piece_values), [])
 
 def move(first, pieces, move_history):
     global found, finished
@@ -133,6 +140,11 @@ def mark_all():
     for i in range(total):
         piece[i].set(1)
     update()
+
+def stop():
+    global process
+    if(process):
+        process.terminate()
 
 def update_rows(name, index, operation):
     init(rows_value.get(), False)
@@ -296,7 +308,7 @@ def init(rows_count, first):
         limit_options.place(relx=0.5,y=25,x=-170, width=80)
         limit_checkbox=tkinter.Checkbutton(window, variable=found_limit, text="Found Limit")
         limit_checkbox.place(relx=0.5,y=0,x=-170, width=100)
-        solve=tkinter.Button(window, command=start, text="Solve")
+        solve=tkinter.Button(window, command=start_process, text="Solve")
         solve.place(relx=0.5,y=0,x=-45, width=80)
         clear_console=tkinter.Button(window, command=clear, text="Clear")
         clear_console.place(relx=0.5,y=30,x=-45, width=80)
@@ -306,6 +318,7 @@ def init(rows_count, first):
         peg_count_label.place(relx=0.5,y=0,x=90, width=80)
         operator=tkinter.OptionMenu(window, peg_operator, "<","<=","=",">=",">")
         operator.place(relx=0.5,y=0,x=175, width=80)
+        tkinter.Button(window, command=stop, text="Stop").place(relx=0.5,y=60,x=-45, width=80)
     else:
         peg_count_options.set_menu(*peg_count_choices)
 
