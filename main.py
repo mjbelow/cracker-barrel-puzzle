@@ -40,24 +40,32 @@ def update():
         piece_values[i]=piece[i].get()
 
 finished=False
-process=False
+started=False
+stopped=True
 
 def start_process():
-    global process
-    if(not process or not process.is_alive()):
-        process=Process(target=start, args=())
-        process.start()
+    Process(target=start, args=()).start()
 
 def start():
-    global found, finished
-    found=False
-    finished=False
-    move(True, copy.copy(piece_values), [])
+    global started, stopped, found, finished
+    print(started)
+    if not started:
+        started=True
+        stopped=False
+        found=False
+        finished=False
+        move(True, copy.copy(piece_values), [])
 
 def move(first, pieces, move_history):
-    global found, finished
+    global started, found, finished
     moved=False
 
+   # if not finished:
+        # hacky solution because if this thread has no activity apart from processing, the app will become unresponsive
+        # so this just prints, but stays in the same place (the ansi sequence causes the cursor to move up a line, and the print function moves down a line)
+      #  print("[1A")
+        # print(pieces)
+    
     # if there are less pegs than you want for a solution, stop going down that path
     count=0
     for i in range(total):
@@ -76,10 +84,12 @@ def move(first, pieces, move_history):
         return
 
     for i in range(total):
-        if(found_limit.get() and found >= found_limit_value.get()):
+        if(stopped or (found_limit.get() and found >= found_limit_value.get())):
+            started=False
             if not finished:
                 finished=True
-                print("---------------------")
+                print("---------------------!!")
+                print(started)
             return
         if(pieces[i]==1):
             for j in range(len(valid_moves[i])):
@@ -130,6 +140,8 @@ def move(first, pieces, move_history):
         move_history=[]
     if(first):
         print("---------------------")
+        started=False
+        finished=True
 
 def clear_all():
     for i in range(total):
@@ -142,9 +154,8 @@ def mark_all():
     update()
 
 def stop():
-    global process
-    if(process):
-        process.terminate()
+    global stopped
+    stopped=True
 
 def update_rows(name, index, operation):
     init(rows_value.get(), False)
