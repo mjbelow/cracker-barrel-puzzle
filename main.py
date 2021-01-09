@@ -1,4 +1,10 @@
-import tkinter, math, copy, os, functools, tkinter.ttk
+try:
+    import tkinter
+    from tkinter import ttk
+except:
+    import Tkinter as tkinter
+    import ttk
+import math, copy, os, functools
 
 window = tkinter.Tk()
 window.title("Cracker Barrel Puzzle")
@@ -113,11 +119,11 @@ def move(first, pieces, move_history):
             peg_count_option=count > peg_count.get()
         if(peg_count_option):
             found+=1
-            print()
+            print("")
             print(move_history)
-            print("remaining pieces: ",count)
-            print("solution count: ",found)
-            print()
+            print("remaining pieces: %d" % count)
+            print("solution count: %d" % found)
+            print("")
         move_history=[]
     if(first):
         print("---------------------")
@@ -136,9 +142,9 @@ def update_rows(name, index, operation):
     init(rows_value.get(), False)
     draw_board_lines()
 
-class puzzle_piece(tkinter.Checkbutton):
+class puzzle_piece(tkinter.Checkbutton, object):
     def __init__(self, master, number):
-        super().__init__(master)
+        super(self.__class__, self).__init__(master)
         self.number = number
         self.bind("<Enter>", functools.partial(self.show_moves, False))
         self.bind("<ButtonRelease-1>", functools.partial(self.show_moves, True))
@@ -197,9 +203,9 @@ def init(rows_count, first):
     tri_height=(rows-1)*vert_dist
 
     if tri_width+piece_size < 550:
-        window.geometry("550x"+str(math.ceil(tri_height+piece_size*2)+top))
+        window.geometry("550x"+str(int(math.ceil(tri_height+piece_size*2)+top)))
     else:
-        window.geometry(str(tri_width+piece_size)+"x"+str(math.ceil(tri_height+piece_size*2)+top))
+        window.geometry(str(tri_width+piece_size)+"x"+str(int(math.ceil(tri_height+piece_size*2)+top)))
 
     found=0
     peg_count_choices=set()
@@ -298,7 +304,7 @@ def init(rows_count, first):
         solve.place(relx=0.5,y=0,x=-45, width=80)
         clear_console=tkinter.Button(window, command=clear, text="Clear")
         clear_console.place(relx=0.5,y=30,x=-45, width=80)
-        peg_count_options=tkinter.ttk.OptionMenu(window, peg_count, *peg_count_choices)
+        peg_count_options=ttk.OptionMenu(window, peg_count, *peg_count_choices)
         peg_count_options.place(relx=0.5,y=25,x=90, width=80)
         peg_count_label=tkinter.Label(window, text="Peg Count")
         peg_count_label.place(relx=0.5,y=0,x=90, width=80)
