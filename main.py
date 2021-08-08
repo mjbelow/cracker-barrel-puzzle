@@ -1,15 +1,29 @@
+#!/usr/bin/env python
+
 try:
     import tkinter
     from tkinter import ttk
 except:
     import Tkinter as tkinter
     import ttk
-import math, copy, os, functools
+import math, copy, os, functools, platform
 
 window = tkinter.Tk()
 window.title("Cracker Barrel Puzzle")
 
-clear = lambda: os.system("cls")
+# function to clear terminal dependent on system
+if(platform.system() == "Windows"):
+    clear = lambda: os.system("cls")
+else:
+    clear = lambda: os.system("clear")
+
+# theme of app
+lightGray="#d9d9d9"
+darkGray="#aaa"
+validMovesColor="#f00"
+
+#offset of buttons from top
+yTopOffset=5
 
 def draw_board_lines():
     center=window.winfo_width()//2
@@ -166,17 +180,22 @@ class puzzle_piece(tkinter.Checkbutton, object):
                 line_start=center+puzzle_position[piece_src][0], puzzle_position[piece_src][1]
                 line_end=center+puzzle_position[piece_dest][0], puzzle_position[piece_dest][1]
                 # draw line from this piece to valid move locations
-                canvas.create_line(line_start, line_end, width=3, fill="#f00")
+                canvas.create_line(line_start, line_end, width=3, fill=validMovesColor)
 
     def clear_moves(self, event):
         draw_board_lines()
 
+class puzzle_button(tkinter.Button, object):
+    def __init__(self, master, **kwargs):
+        kwargs["bg"]=lightGray
+        super(self.__class__, self).__init__(master, kwargs)
+
 rows_value = tkinter.IntVar(value=5)
 rows_value.trace("w",update_rows)
 
-canvas = tkinter.Canvas()
+canvas = tkinter.Canvas(highlightthickness=0)
 canvas.bind("<Configure>", configure)
-canvas.configure(background="SystemButtonFace")
+canvas.configure(background=lightGray)
 canvas.place(x=0,y=0,  relwidth=1, relheight=1)
 
 def init(rows_count, first):
@@ -224,7 +243,7 @@ def init(rows_count, first):
 
     # generate puzzle board
     for i in range(total):
-        puzzle[i].configure(indicatoron=False, variable=piece[i], command=update, text=i, selectcolor="#ccc")
+        puzzle[i].configure(indicatoron=False, variable=piece[i], command=update, text=i, selectcolor=darkGray, background=lightGray)
 
     # place each piece and figure out valid moves for the piece
     for i in range(rows):
@@ -290,26 +309,31 @@ def init(rows_count, first):
             puzzle[n].lift(canvas)
 
     if first:
-        clear_all_btn = tkinter.Button(window, command=clear_all, text="Clear All")
-        clear_all_btn.place(relx=0.5,y=0,x=-255, width=80)
-        mark_all_btn = tkinter.Button(window, command=mark_all, text="Mark All")
-        mark_all_btn.place(relx=0.5,y=30,x=-255, width=80)
+        s = ttk.Style()
+        s.configure("TMenubutton", background=lightGray)
+        clear_all_btn = puzzle_button(window, command=clear_all, text="Clear All")
+        clear_all_btn.place(relx=0.5,y=yTopOffset+0,x=-255, width=80)
+        mark_all_btn = puzzle_button(window, command=mark_all, text="Mark All")
+        mark_all_btn.place(relx=0.5,y=yTopOffset+30,x=-255, width=80)
         row_options=tkinter.OptionMenu(window, rows_value, 1,2,3,4,5,6,7,8,9,10,11,12)
-        row_options.place(relx=0.5,y=60,x=-255, width=80)
+        row_options.config(bg=lightGray, highlightthickness=0)
+        row_options.place(relx=0.5,y=yTopOffset+60,x=-255, width=80)
         limit_options=tkinter.OptionMenu(window, found_limit_value, 1,2,3,4,5,10,20,30,40,50,100,200,300,400,500,1000,2000,3000,4000,5000)
-        limit_options.place(relx=0.5,y=25,x=-170, width=80)
-        limit_checkbox=tkinter.Checkbutton(window, variable=found_limit, text="Found Limit")
-        limit_checkbox.place(relx=0.5,y=0,x=-170, width=100)
-        solve=tkinter.Button(window, command=start, text="Solve")
-        solve.place(relx=0.5,y=0,x=-45, width=80)
-        clear_console=tkinter.Button(window, command=clear, text="Clear")
-        clear_console.place(relx=0.5,y=30,x=-45, width=80)
+        limit_options.config(bg=lightGray, highlightthickness=0)
+        limit_options.place(relx=0.5,y=yTopOffset+25,x=-170, width=80)
+        limit_checkbox=tkinter.Checkbutton(window, variable=found_limit, text="Found Limit", bg=lightGray)
+        limit_checkbox.place(relx=0.5,y=yTopOffset+0,x=-170, width=100)
+        solve=puzzle_button(window, command=start, text="Solve")
+        solve.place(relx=0.5,y=yTopOffset+0,x=-45, width=80)
+        clear_console=puzzle_button(window, command=clear, text="Clear")
+        clear_console.place(relx=0.5,y=yTopOffset+30,x=-45, width=80)
         peg_count_options=ttk.OptionMenu(window, peg_count, *peg_count_choices)
-        peg_count_options.place(relx=0.5,y=25,x=90, width=80)
-        peg_count_label=tkinter.Label(window, text="Peg Count")
-        peg_count_label.place(relx=0.5,y=0,x=90, width=80)
+        peg_count_options.place(relx=0.5,y=yTopOffset+25,x=90, width=80)
+        peg_count_label=tkinter.Label(window, text="Peg Count", bg=lightGray)
+        peg_count_label.place(relx=0.5,y=yTopOffset+0,x=90, width=80)
         operator=tkinter.OptionMenu(window, peg_operator, "<","<=","=",">=",">")
-        operator.place(relx=0.5,y=0,x=175, width=80)
+        operator.config(bg=lightGray, highlightthickness=0)
+        operator.place(relx=0.5,y=yTopOffset+0,x=175, width=80)
     else:
         peg_count_options.set_menu(*peg_count_choices)
 
