@@ -193,10 +193,10 @@ class puzzle_piece(tkinter.Checkbutton, object):
     def clear_moves(self, event):
         draw_board_lines()
 
-class puzzle_button(tkinter.Button, object):
+class puzzle_button(ttk.Button, object):
     def __init__(self, master, **kwargs):
-        kwargs["bg"]=lightGray
-        super(self.__class__, self).__init__(master, kwargs)
+        kwargs["takefocus"]=False
+        super(self.__class__, self).__init__(master, **kwargs)
 
 rows_value = tkinter.IntVar(value=5)
 rows_value.trace("w",update_rows)
@@ -319,29 +319,27 @@ def init(rows_count, first):
     if first:
         s = ttk.Style()
         s.configure("TMenubutton", background=lightGray)
+        s.configure("TCheckbutton", background=lightGray)
         clear_all_btn = puzzle_button(window, command=clear_all, text="Clear All")
         clear_all_btn.place(relx=0.5,y=yTopOffset+0,x=-255, width=80)
         mark_all_btn = puzzle_button(window, command=mark_all, text="Mark All")
         mark_all_btn.place(relx=0.5,y=yTopOffset+30,x=-255, width=80)
-        row_options=tkinter.OptionMenu(window, rows_value, 1,2,3,4,5,6,7,8,9,10,11,12)
-        row_options.config(bg=lightGray, highlightthickness=0)
+        row_options=ttk.OptionMenu(window, rows_value, 0,1,2,3,4,5,6,7,8,9,10,11,12)
         row_options.place(relx=0.5,y=yTopOffset+60,x=-255, width=80)
-        limit_options=tkinter.OptionMenu(window, found_limit_value, 1,2,3,4,5,10,20,30,40,50,100,200,300,400,500,1000,2000,3000,4000,5000)
-        limit_options.config(bg=lightGray, highlightthickness=0)
+        limit_options=ttk.OptionMenu(window, found_limit_value, 0,1,2,3,4,5,10,20,30,40,50,100,200,300,400,500,1000,2000,3000,4000,5000)
+        limit_checkbox=ttk.Checkbutton(window, variable=found_limit, text="Found Limit")
         limit_options.place(relx=0.5,y=yTopOffset+25,x=-170, width=80)
-        limit_checkbox=tkinter.Checkbutton(window, variable=found_limit, text="Found Limit", bg=lightGray)
         limit_checkbox.place(relx=0.5,y=yTopOffset+0,x=-170, width=100)
         solve=puzzle_button(window, command=start, text="Solve")
         solve.place(relx=0.5,y=yTopOffset+0,x=-45, width=80)
         clear_console=puzzle_button(window, command=clear, text="Clear")
         clear_console.place(relx=0.5,y=yTopOffset+30,x=-45, width=80)
         peg_count_options=ttk.OptionMenu(window, peg_count, *peg_count_choices)
-        peg_count_options.place(relx=0.5,y=yTopOffset+25,x=90, width=80)
+        peg_count_options.place(relx=0.5,y=yTopOffset+25,x=175, width=80)
         peg_count_label=tkinter.Label(window, text="Peg Count", bg=lightGray)
         peg_count_label.place(relx=0.5,y=yTopOffset+0,x=90, width=80)
-        operator=tkinter.OptionMenu(window, peg_operator, "<","<=","=",">=",">")
-        operator.config(bg=lightGray, highlightthickness=0)
-        operator.place(relx=0.5,y=yTopOffset+0,x=175, width=80)
+        operator=ttk.OptionMenu(window, peg_operator, "","<","<=","=",">=",">")
+        operator.place(relx=0.5,y=yTopOffset+25,x=90, width=80)
     else:
         peg_count_options.set_menu(*peg_count_choices)
 
