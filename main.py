@@ -319,7 +319,6 @@ def init(rows_count, first):
     if first:
         s = ttk.Style()
         s.configure("TMenubutton", background=lightGray)
-        s.configure("TCheckbutton", background=lightGray)
         clear_all_btn = puzzle_button(window, command=clear_all, text="Clear All")
         clear_all_btn.place(relx=0.5,y=yTopOffset+0,x=-255, width=80)
         mark_all_btn = puzzle_button(window, command=mark_all, text="Mark All")
@@ -327,7 +326,7 @@ def init(rows_count, first):
         row_options=ttk.OptionMenu(window, rows_value, 0,1,2,3,4,5,6,7,8,9,10,11,12)
         row_options.place(relx=0.5,y=yTopOffset+60,x=-255, width=80)
         limit_options=ttk.OptionMenu(window, found_limit_value, 0,1,2,3,4,5,10,20,30,40,50,100,200,300,400,500,1000,2000,3000,4000,5000)
-        limit_checkbox=ttk.Checkbutton(window, variable=found_limit, text="Found Limit")
+        limit_checkbox=tkinter.Checkbutton(window, variable=found_limit, text="Found Limit", bg=lightGray)
         limit_options.place(relx=0.5,y=yTopOffset+25,x=-170, width=80)
         limit_checkbox.place(relx=0.5,y=yTopOffset+0,x=-170, width=100)
         solve=puzzle_button(window, command=start, text="Solve")
