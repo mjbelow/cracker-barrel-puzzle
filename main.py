@@ -11,6 +11,8 @@ import math, copy, os, functools, platform
 window = tkinter.Tk()
 window.title("Cracker Barrel Puzzle")
 
+print(os.system("ps"))
+
 # function to clear terminal dependent on system
 if(platform.system() == "Windows"):
     clear = lambda: os.system("cls")
