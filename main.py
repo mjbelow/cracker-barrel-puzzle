@@ -65,6 +65,9 @@ def start():
     finished=False
     move(True, copy.copy(piece_values), [])
 
+def separator():
+    print("---------------------")
+
 def move(first, pieces, move_history):
     global found, finished
     moved=False
@@ -82,15 +85,17 @@ def move(first, pieces, move_history):
     else:
         peg_count_option=count <= peg_count.get()
     if(peg_count_option):
+        # if this is the first move, there won't be any more solutions found, so print a separator to indicate it's done solving
         if(first):
-            print("---------------------")
+            separator()
         return
 
     for i in range(total):
         if(found_limit.get() and found >= found_limit_value.get()):
             if not finished:
                 finished=True
-                print("---------------------")
+                # separate each solution group
+                separator()
             return
         if(pieces[i]==1):
             for j in range(len(valid_moves[i])):
@@ -113,6 +118,7 @@ def move(first, pieces, move_history):
 
                     # find more available moves
                     move(False,pieces_adjust,my_move_history)
+    # no more valid moves could be made; see if this series of moves is a solution according to the set [peg count] compared to this solution's peg count using the set [logical operator]
     if(not moved):
         count=0
         for i in range(total):
@@ -138,9 +144,11 @@ def move(first, pieces, move_history):
             print("remaining pieces: %d" % count)
             print("solution count: %d" % found)
             print("")
+            # to separate each individual solution, uncomment this and comment out [separate each solution group]
+            # separator()
         move_history=[]
-    if(first):
-        print("---------------------")
+    if(first and not finished):
+        separator()
 
 def clear_all():
     for i in range(total):
