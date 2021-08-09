@@ -8,6 +8,8 @@ except:
     import ttk
 import math, copy, os, functools, platform
 
+os.system("")
+
 window = tkinter.Tk()
 window.title("Cracker Barrel Puzzle")
 
@@ -65,8 +67,11 @@ def start():
     finished=False
     move(True, copy.copy(piece_values), [])
 
+def esc(code):
+    return '\033['+code+'m'
+
 def separator():
-    print("---------------------")
+    print(esc("7") + "---------------------" + esc("0"))
 
 def move(first, pieces, move_history):
     global found, finished
